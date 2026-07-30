@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { QRRA } from "@/lib/db/tables";
 import { createClient } from "@/lib/supabase/client";
@@ -17,6 +17,11 @@ export function AccountProfileForm({
   const [tel, setTel] = useState(phone);
   const [msg, setMsg] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setName(fullName);
+    setTel(phone);
+  }, [fullName, phone]);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -53,6 +58,10 @@ export function AccountProfileForm({
       <h2 className="font-[family-name:var(--font-display)] text-2xl font-extrabold tracking-tight">
         Профиль
       </h2>
+      <p className="mt-2 text-sm text-mute">
+        Контакты для заказов. При регистрации они уже здесь — меняй только если
+        нужно.
+      </p>
       <form onSubmit={onSubmit} className="mt-4 grid gap-4 sm:grid-cols-2">
         <label className="block">
           <span className="text-xs font-bold uppercase tracking-wider text-mute">

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { syncSignupProfile } from "@/lib/sync-signup-profile";
 
 export function SignupForm() {
   const router = useRouter();
@@ -68,6 +69,12 @@ export function SignupForm() {
       setError(msg);
       return;
     }
+
+    const userId = data.user?.id;
+    if (userId) {
+      await syncSignupProfile(supabase, userId, fullName, phone);
+    }
+
     if (data.session) {
       router.replace("/account");
       router.refresh();
