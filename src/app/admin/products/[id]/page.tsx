@@ -1,15 +1,14 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AdminPageHeader } from "@/components/admin/page-header";
 import { QRRA } from "@/lib/db/tables";
 import { createClient } from "@/lib/supabase/server";
+import { DeleteProductButton } from "../delete-button";
+import { ToggleActiveButton } from "../toggle-active";
 import { ProductForm } from "../product-form";
 import type { ColorGroup } from "@/data/products";
 
 type Props = { params: Promise<{ id: string }> };
-
-export async function generateMetadata({ params }: Props) {
-  const { id } = await params;
-  return { title: `Edit ${id.slice(0, 8)} — Admin QRRA` };
-}
 
 export default async function EditProductPage({ params }: Props) {
   const { id } = await params;
@@ -30,11 +29,25 @@ export default async function EditProductPage({ params }: Props) {
   };
 
   return (
-    <section className="bg-paper pt-10">
-      <div className="mx-auto max-w-[800px] px-4 pb-24 sm:px-6">
-        <h1 className="font-[family-name:var(--font-display)] text-3xl font-black tracking-tight">
-          {data.name}
-        </h1>
+    <div>
+      <AdminPageHeader
+        title={data.name}
+        description={data.slug}
+        actions={
+          <>
+            <Link
+              href={`/shop/${data.slug}`}
+              className="border-2 border-ink px-3 py-2 text-xs font-bold uppercase tracking-wider hover:bg-acid"
+              data-cursor="hover"
+            >
+              На витрину
+            </Link>
+            <ToggleActiveButton id={data.id} isActive={data.is_active} />
+            <DeleteProductButton id={data.id} />
+          </>
+        }
+      />
+      <div className="px-4 pb-16 sm:px-8 max-w-4xl">
         <ProductForm
           initial={{
             id: data.id,
@@ -60,6 +73,6 @@ export default async function EditProductPage({ params }: Props) {
           }}
         />
       </div>
-    </section>
+    </div>
   );
 }

@@ -147,40 +147,68 @@ export function ProductForm({ initial }: { initial?: ProductFormValues }) {
   );
 
   return (
-    <form onSubmit={onSubmit} className="mt-8 grid gap-4 sm:grid-cols-2">
-      {field("name", "Название")}
-      {field("slug", "Slug")}
-      {field("price", "Цена", { type: "number" })}
-      {field("color", "Цвет")}
-      {field("lens", "Линзы")}
-      {field("vibe", "Vibe")}
-      <div className="sm:col-span-2">{field("description", "Описание", { textarea: true })}</div>
-      {field("accent", "Accent")}
-      {field("frame", "Frame")}
-      {field("tags", "Теги (через запятую)")}
-      <label className="block">
-        <span className="text-xs font-bold uppercase tracking-wider text-mute">
-          Группа
-        </span>
-        <select
-          value={values.color_group}
-          onChange={(e) => set("color_group", e.target.value as ColorGroup)}
-          className="mt-2 w-full border-2 border-ink bg-paper px-3 py-2 outline-none"
-        >
-          {groups.map((g) => (
-            <option key={g} value={g}>
-              {g}
-            </option>
-          ))}
-        </select>
-      </label>
-      {field("fit", "Fit")}
-      {field("fit_note", "Fit note")}
-      {field("material", "Материал")}
-      {field("weight", "Вес")}
-      {field("uv", "UV")}
-      {field("warranty", "Гарантия")}
-      <div className="sm:col-span-2">{field("care", "Уход", { textarea: true })}</div>
+    <form onSubmit={onSubmit} className="mt-4 grid gap-6 sm:grid-cols-2">
+      <div className="sm:col-span-2 border-2 border-ink p-4">
+        <p className="text-xs font-bold uppercase tracking-[0.16em] text-signal">
+          Основное
+        </p>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          {field("name", "Название")}
+          {field("slug", "Slug")}
+          {field("price", "Цена", { type: "number" })}
+          {field("color", "Цвет")}
+          {field("lens", "Линзы")}
+          {field("vibe", "Vibe")}
+          <div className="sm:col-span-2">
+            {field("description", "Описание", { textarea: true })}
+          </div>
+        </div>
+      </div>
+
+      <div className="sm:col-span-2 border-2 border-ink p-4">
+        <p className="text-xs font-bold uppercase tracking-[0.16em] text-signal">
+          Визуал
+        </p>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          {field("accent", "Accent")}
+          {field("frame", "Frame")}
+          {field("tags", "Теги (через запятую)")}
+          <label className="block">
+            <span className="text-xs font-bold uppercase tracking-wider text-mute">
+              Группа
+            </span>
+            <select
+              value={values.color_group}
+              onChange={(e) => set("color_group", e.target.value as ColorGroup)}
+              className="mt-2 w-full border-2 border-ink bg-paper px-3 py-2 outline-none"
+            >
+              {groups.map((g) => (
+                <option key={g} value={g}>
+                  {g}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div className="sm:col-span-2 border-2 border-ink p-4">
+        <p className="text-xs font-bold uppercase tracking-[0.16em] text-signal">
+          Спеки и уход
+        </p>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          {field("fit", "Fit")}
+          {field("fit_note", "Fit note")}
+          {field("material", "Материал")}
+          {field("weight", "Вес")}
+          {field("uv", "UV")}
+          {field("warranty", "Гарантия")}
+          <div className="sm:col-span-2">
+            {field("care", "Уход", { textarea: true })}
+          </div>
+        </div>
+      </div>
+
       <label className="flex items-center gap-2 sm:col-span-2">
         <input
           type="checkbox"

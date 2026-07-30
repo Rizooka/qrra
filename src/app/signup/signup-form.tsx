@@ -72,7 +72,7 @@ export function SignupForm() {
 
     const userId = data.user?.id;
     if (userId) {
-      await syncSignupProfile(supabase, userId, fullName, phone);
+      await syncSignupProfile(supabase, userId, fullName, phone, email);
     }
 
     if (data.session) {

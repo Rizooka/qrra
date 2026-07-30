@@ -12,6 +12,7 @@ export async function getUser() {
 
 export type Profile = {
   id: string;
+  email: string | null;
   full_name: string | null;
   phone: string | null;
   role: "customer" | "admin";
@@ -23,7 +24,7 @@ export async function getProfile(): Promise<Profile | null> {
   const supabase = await createClient();
   const { data } = await supabase
     .from(QRRA.profiles)
-    .select("id, full_name, phone, role")
+    .select("id, email, full_name, phone, role")
     .eq("id", user.id)
     .maybeSingle();
   return (data as Profile | null) ?? null;
@@ -39,18 +40,19 @@ export async function ensureProfile(user: User): Promise<Profile | null> {
     .from(QRRA.profiles)
     .insert({
       id: user.id,
+      email: user.email ?? null,
       full_name:
         typeof meta.full_name === "string" ? meta.full_name : null,
       phone: typeof meta.phone === "string" ? meta.phone : null,
       role: "customer",
     })
-    .select("id, full_name, phone, role")
+    .select("id, email, full_name, phone, role")
     .maybeSingle();
 
   if (error) {
     const { data: retry } = await supabase
       .from(QRRA.profiles)
-      .select("id, full_name, phone, role")
+      .select("id, email, full_name, phone, role")
       .eq("id", user.id)
       .maybeSingle();
     return (retry as Profile | null) ?? null;

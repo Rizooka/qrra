@@ -7,8 +7,10 @@ export async function syncSignupProfile(
   userId: string,
   fullName: string,
   phone: string,
+  email?: string,
 ) {
   const payload = {
+    email: email?.trim() || null,
     full_name: fullName.trim() || null,
     phone: phone.trim() || null,
     updated_at: new Date().toISOString(),

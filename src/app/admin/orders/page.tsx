@@ -1,94 +1,123 @@
+import Link from "next/link";
+import { Suspense } from "react";
+import { AdminPageHeader } from "@/components/admin/page-header";
+import { OrderStatusBadge } from "@/components/admin/order-status-badge";
+import { OrdersStatusFilter } from "@/components/admin/orders-status-filter";
 import { QRRA } from "@/lib/db/tables";
 import { createClient } from "@/lib/supabase/server";
 import { formatPrice } from "@/data/products";
-import { OrderStatusSelect } from "./status-select";
+import { ORDER_STATUSES, type OrderStatus } from "@/lib/admin/order-status";
 
 export const metadata = { title: "Заказы — Admin QRRA" };
 
-const statusLabel: Record<string, string> = {
-  new: "Новый",
-  confirmed: "Подтверждён",
-  shipped: "В пути",
-  delivered: "Доставлен",
-  cancelled: "Отменён",
-};
+type Props = { searchParams: Promise<{ status?: string }> };
 
-export default async function AdminOrdersPage() {
+export default async function AdminOrdersPage({ searchParams }: Props) {
+  const { status: statusParam } = await searchParams;
+  const statusFilter =
+    statusParam &&
+    ORDER_STATUSES.includes(statusParam as OrderStatus)
+      ? (statusParam as OrderStatus)
+      : null;
+
   const supabase = await createClient();
-  const { data: orders } = await supabase
+  let query = supabase
     .from(QRRA.orders)
     .select(
-      "id, status, total, shipping, created_at, qrra_order_items(product_name, qty, price), qrra_profiles(full_name, phone)",
+      "id, status, total, shipping, created_at, qrra_profiles(full_name, phone, email)",
     )
     .order("created_at", { ascending: false });
 
-  return (
-    <section className="bg-paper pt-10">
-      <div className="mx-auto max-w-[1100px] px-4 pb-24 sm:px-6">
-        <h1 className="font-[family-name:var(--font-display)] text-3xl font-black tracking-tight">
-          Заказы
-        </h1>
-        <ul className="mt-8 space-y-4">
-          {(orders ?? []).map((order) => {
-            const shipping = (order.shipping ?? {}) as {
-              name?: string;
-              phone?: string;
-              city?: string;
-              line?: string;
-              delivery?: string;
-            };
-            const items = (order.qrra_order_items ?? []) as {
-              product_name: string;
-              qty: number;
-              price: number;
-            }[];
-            const profile = order.qrra_profiles as
-              | { full_name: string | null; phone: string | null }
-              | null
-              | { full_name: string | null; phone: string | null }[];
-            const p = Array.isArray(profile) ? profile[0] : profile;
+  if (statusFilter) query = query.eq("status", statusFilter);
 
-            return (
-              <li key={order.id} className="border-2 border-ink p-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <p className="font-bold tabular-nums">
-                      {formatPrice(order.total)}
-                    </p>
-                    <p className="mt-1 text-xs text-mute">
+  const { data: orders } = await query;
+
+  return (
+    <div>
+      <AdminPageHeader
+        title="Заказы"
+        description="Статусы, доставка, клиент."
+      />
+      <Suspense fallback={null}>
+        <OrdersStatusFilter />
+      </Suspense>
+
+      <div className="overflow-x-auto border-y-2 border-ink px-4 pb-12 sm:px-8">
+        <table className="w-full min-w-[900px] text-left text-sm">
+          <thead className="border-b-2 border-ink bg-ink text-paper">
+            <tr>
+              <th className="px-4 py-3 text-[10px] font-extrabold uppercase tracking-[0.14em]">
+                Дата
+              </th>
+              <th className="px-4 py-3 text-[10px] font-extrabold uppercase tracking-[0.14em]">
+                Клиент
+              </th>
+              <th className="px-4 py-3 text-[10px] font-extrabold uppercase tracking-[0.14em]">
+                Сумма
+              </th>
+              <th className="px-4 py-3 text-[10px] font-extrabold uppercase tracking-[0.14em]">
+                Статус
+              </th>
+              <th className="px-4 py-3 text-[10px] font-extrabold uppercase tracking-[0.14em]">
+                Доставка
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {(orders ?? []).map((order) => {
+              const shipping = (order.shipping ?? {}) as {
+                city?: string;
+                delivery?: string;
+              };
+              const profile = order.qrra_profiles as
+                | { full_name: string | null; phone: string | null; email: string | null }
+                | null
+                | {
+                    full_name: string | null;
+                    phone: string | null;
+                    email: string | null;
+                  }[];
+              const p = Array.isArray(profile) ? profile[0] : profile;
+
+              return (
+                <tr key={order.id} className="border-b border-ink/15">
+                  <td className="px-4 py-3 text-mute">
+                    <Link
+                      href={`/admin/orders/${order.id}`}
+                      className="font-bold text-ink hover:text-signal"
+                      data-cursor="hover"
+                    >
                       {new Date(order.created_at).toLocaleString("ru-RU")}
+                    </Link>
+                  </td>
+                  <td className="px-4 py-3">
+                    <p className="font-bold">{p?.full_name || "—"}</p>
+                    <p className="text-xs text-mute">
+                      {p?.phone || "—"} · {p?.email || "—"}
                     </p>
-                    <p className="mt-2 text-sm">
-                      {shipping.name || p?.full_name || "—"} ·{" "}
-                      {shipping.phone || p?.phone || "—"}
-                    </p>
-                    <p className="text-sm text-mute">
-                      {shipping.city}
-                      {shipping.line ? `, ${shipping.line}` : ""} ·{" "}
-                      {shipping.delivery ?? "—"}
-                    </p>
-                  </div>
-                  <OrderStatusSelect id={order.id} status={order.status} />
-                </div>
-                <ul className="mt-3 space-y-1 border-t-2 border-ink/10 pt-3 text-sm">
-                  {items.map((item, i) => (
-                    <li key={`${order.id}-${i}`}>
-                      {item.product_name} × {item.qty} —{" "}
-                      {formatPrice(item.price * item.qty)}
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-2 text-[10px] uppercase tracking-wider text-mute">
-                  {statusLabel[order.status] ?? order.status}
-                </p>
-              </li>
-            );
-          })}
-          {(orders ?? []).length === 0 ? (
-            <li className="text-sm text-mute">Заказов пока нет.</li>
-          ) : null}
-        </ul>
+                  </td>
+                  <td className="px-4 py-3 font-bold tabular-nums">
+                    {formatPrice(order.total)}
+                  </td>
+                  <td className="px-4 py-3">
+                    <OrderStatusBadge status={order.status} />
+                  </td>
+                  <td className="px-4 py-3 text-mute">
+                    {shipping.city ?? "—"} · {shipping.delivery ?? "—"}
+                  </td>
+                </tr>
+              );
+            })}
+            {(orders ?? []).length === 0 ? (
+              <tr>
+                <td colSpan={5} className="px-4 py-12 text-center text-mute">
+                  Заказов нет.
+                </td>
+              </tr>
+            ) : null}
+          </tbody>
+        </table>
       </div>
-    </section>
+    </div>
   );
 }

@@ -1,16 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import {
+  ORDER_STATUSES,
+  ORDER_STATUS_LABEL,
+} from "@/lib/admin/order-status";
 import { QRRA } from "@/lib/db/tables";
 import { createClient } from "@/lib/supabase/client";
-
-const statuses = [
-  "new",
-  "confirmed",
-  "shipped",
-  "delivered",
-  "cancelled",
-] as const;
 
 export function OrderStatusSelect({
   id,
@@ -37,9 +33,9 @@ export function OrderStatusSelect({
         router.refresh();
       }}
     >
-      {statuses.map((s) => (
+      {ORDER_STATUSES.map((s) => (
         <option key={s} value={s}>
-          {s}
+          {ORDER_STATUS_LABEL[s]}
         </option>
       ))}
     </select>

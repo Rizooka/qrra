@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Unbounded, Manrope } from "next/font/google";
 import { CartProvider } from "@/components/cart-provider";
 import { SoundProvider } from "@/components/sound-provider";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
+import { SiteChrome } from "@/components/site-chrome";
 import { SoundToggle } from "@/components/sound-toggle";
 import { ClientEffects } from "@/components/client-effects";
 import "./globals.css";
@@ -38,9 +37,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col antialiased">
         <SoundProvider>
           <CartProvider>
-            <SiteHeader />
-            <main className="flex-1">{children}</main>
-            <SiteFooter />
+            <SiteChrome>{children}</SiteChrome>
           </CartProvider>
           <SoundToggle />
           <ClientEffects />

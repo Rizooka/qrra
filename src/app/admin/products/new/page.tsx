@@ -1,16 +1,18 @@
+import { AdminPageHeader } from "@/components/admin/page-header";
 import { ProductForm } from "../product-form";
 
 export const metadata = { title: "Новый товар — Admin QRRA" };
 
 export default function NewProductPage() {
   return (
-    <section className="bg-paper pt-10">
-      <div className="mx-auto max-w-[800px] px-4 pb-24 sm:px-6">
-        <h1 className="font-[family-name:var(--font-display)] text-3xl font-black tracking-tight">
-          Новый товар
-        </h1>
+    <div>
+      <AdminPageHeader
+        title="Новый товар"
+        description="Поля совпадают с карточкой в магазине."
+      />
+      <div className="px-4 pb-16 sm:px-8">
         <ProductForm />
       </div>
-    </section>
+    </div>
   );
 }

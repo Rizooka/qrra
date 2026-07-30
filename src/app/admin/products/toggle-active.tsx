@@ -31,7 +31,7 @@ export function ToggleActiveButton({
         router.refresh();
       }}
     >
-      {isActive ? "On" : "Off"}
+      {isActive ? "На витрине" : "Скрыт"}
     </button>
   );
 }
