@@ -5,6 +5,20 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
+function mapLoginError(message: string) {
+  const lower = message.toLowerCase();
+  if (
+    lower.includes("invalid login credentials") ||
+    lower.includes("invalid email or password")
+  ) {
+    return "Неверный email или пароль. Если email уже был в этом Supabase (другой проект) — сбрось пароль.";
+  }
+  if (lower.includes("email not confirmed")) {
+    return "Подтверди email: письмо от Supabase или сброс пароля.";
+  }
+  return message;
+}
+
 export function LoginForm() {
   const router = useRouter();
   const search = useSearchParams();
@@ -34,7 +48,7 @@ export function LoginForm() {
     });
     setLoading(false);
     if (err) {
-      setError(err.message);
+      setError(mapLoginError(err.message));
       return;
     }
     router.replace(next);
@@ -79,7 +93,14 @@ export function LoginForm() {
         {loading ? "…" : "Войти"}
       </button>
       <p className="text-sm text-mute">
-        Нет доступа?{" "}
+        <Link
+          href="/forgot-password"
+          data-cursor="hover"
+          className="font-bold text-ink underline underline-offset-4"
+        >
+          Забыл пароль
+        </Link>
+        {" · "}
         <Link
           href="/signup"
           data-cursor="hover"

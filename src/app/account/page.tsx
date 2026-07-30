@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getProfile, getUser } from "@/lib/auth";
+import { ensureProfile, getProfile, getUser } from "@/lib/auth";
 import { createClient, qrra } from "@/lib/supabase/server";
 import { formatPrice } from "@/data/products";
 import { AccountProfileForm } from "./profile-form";
@@ -23,7 +23,7 @@ export default async function AccountPage() {
   const user = await getUser();
   if (!user) redirect("/login?next=/account");
 
-  const profile = await getProfile();
+  const profile = (await ensureProfile(user)) ?? (await getProfile());
   const supabase = await createClient();
   const db = qrra(supabase);
 

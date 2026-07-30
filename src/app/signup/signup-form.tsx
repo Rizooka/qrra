@@ -12,12 +12,14 @@ export function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [info, setInfo] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setInfo("");
     let supabase;
     try {
       supabase = createClient();
@@ -30,10 +32,11 @@ export function SignupForm() {
       );
       return;
     }
-    const { error: err } = await supabase.auth.signUp({
+    const { data, error: err } = await supabase.auth.signUp({
       email,
       password,
       options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=/account`,
         data: {
           full_name: fullName,
           phone,
@@ -53,11 +56,30 @@ export function SignupForm() {
         );
         return;
       }
+      if (
+        err.message.toLowerCase().includes("already registered") ||
+        err.code === "user_already_exists"
+      ) {
+        setError(
+          "Этот email уже в Supabase (возможно, другой проект на том же аккаунте). Войди с тем паролем или сбрось пароль.",
+        );
+        return;
+      }
       setError(msg);
       return;
     }
-    router.replace("/account");
-    router.refresh();
+    if (data.session) {
+      router.replace("/account");
+      router.refresh();
+      return;
+    }
+    if (data.user) {
+      setInfo(
+        "Аккаунт создан. Если включено подтверждение email — открой письмо. Или войди, если пароль уже задан.",
+      );
+      return;
+    }
+    setInfo("Проверь почту или попробуй вход.");
   }
 
   return (
@@ -113,6 +135,7 @@ export function SignupForm() {
         />
       </label>
       {error ? <p className="text-sm font-bold text-signal">{error}</p> : null}
+      {info ? <p className="text-sm font-bold text-ink">{info}</p> : null}
       <button
         type="submit"
         disabled={loading}

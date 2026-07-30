@@ -12,7 +12,21 @@ Without this, the site cannot read `qrra.products`, orders, etc.
 
 Path may vary slightly: **Settings → API → Exposed schemas**.
 
-## 2. Make yourself admin
+## Auth (shared Supabase project)
+
+One `auth.users` table for all apps on this project. If signup says **User already registered** but login fails — that email was registered earlier (e.g. Kartly) with a **different password**. Registration does not change the old password.
+
+**Fix:** `/forgot-password` on the site, or Dashboard → **Authentication → Users** → user → **Send password recovery**.
+
+Add redirect URLs in Supabase → **Authentication → URL Configuration**:
+
+- Site URL: your Vercel URL (e.g. `https://qrra.vercel.app`)
+- Redirect URLs: `https://your-domain/**` and `https://your-domain/auth/callback`
+
+Optional: **Authentication → Providers → Email** → disable **Confirm email** for faster testing.
+
+After first successful login, `qrra.profiles` row is created automatically if missing.
+
 
 Run SQL **after** you register on the site (so a row exists in `qrra.profiles`).
 
