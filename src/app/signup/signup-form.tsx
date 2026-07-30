@@ -18,7 +18,18 @@ export function SignupForm() {
     e.preventDefault();
     setLoading(true);
     setError("");
-    const supabase = createClient();
+    let supabase;
+    try {
+      supabase = createClient();
+    } catch (e) {
+      setLoading(false);
+      setError(
+        e instanceof Error
+          ? e.message
+          : "Неверная конфигурация Supabase на сервере.",
+      );
+      return;
+    }
     const { error: err } = await supabase.auth.signUp({
       email,
       password,
@@ -31,7 +42,18 @@ export function SignupForm() {
     });
     setLoading(false);
     if (err) {
-      setError(err.message);
+      const msg = err.message;
+      if (
+        msg.includes("Invalid path") ||
+        msg.includes("PGRST125") ||
+        msg.includes("No host")
+      ) {
+        setError(
+          "Неверный NEXT_PUBLIC_SUPABASE_URL в Vercel. Нужен Project URL: https://xxx.supabase.co (Settings → API), не connection string и не /rest/v1.",
+        );
+        return;
+      }
+      setError(msg);
       return;
     }
     router.replace("/account");

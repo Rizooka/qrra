@@ -43,9 +43,15 @@ Log out and log in again if `/admin` still redirects to `/account`.
 
 ## Vercel env vars
 
-Copy from local `.env.local` or Supabase **Settings → API**:
+Supabase **Project Settings → API** (not Database → Connection string):
 
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+| Variable | Where |
+|----------|--------|
+| `NEXT_PUBLIC_SUPABASE_URL` | **Project URL** — `https://xxxx.supabase.co` only |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | **Project API keys** → `anon` `public` |
+
+Wrong URL causes signup errors like **Invalid path specified in request URL** (often `/rest/v1` pasted into URL, or `postgresql://…`).
+
+After fixing env in Vercel → **Deployments → Redeploy**.
 
 See `.env.example` in the repo root.

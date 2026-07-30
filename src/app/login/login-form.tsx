@@ -18,7 +18,16 @@ export function LoginForm() {
     e.preventDefault();
     setLoading(true);
     setError("");
-    const supabase = createClient();
+    let supabase;
+    try {
+      supabase = createClient();
+    } catch (e) {
+      setLoading(false);
+      setError(
+        e instanceof Error ? e.message : "Неверная конфигурация Supabase.",
+      );
+      return;
+    }
     const { error: err } = await supabase.auth.signInWithPassword({
       email,
       password,
