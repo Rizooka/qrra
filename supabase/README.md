@@ -57,4 +57,6 @@ Log out and log in again. `/admin` should open.
 
 ## Reset QRRA data only
 
-Re-run the migration file (drops `qrra_*` tables and re-seeds products). Does **not** delete `auth.users`.
+Use **`supabase/reset_qrra.sql`** (drops `qrra_*` **tables** — not `DROP VIEW`). Then re-apply the migration file from the `-- Tables` section, or `npx supabase db push`.
+
+Does **not** delete `auth.users`.

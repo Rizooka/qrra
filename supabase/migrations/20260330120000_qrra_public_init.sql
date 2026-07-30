@@ -1,11 +1,5 @@
--- QRRA: clean install in public schema (no custom schema / no views)
--- Wipes previous qrra schema and public.qrra_* views from earlier attempts.
-
-DROP VIEW IF EXISTS public.qrra_profiles CASCADE;
-DROP VIEW IF EXISTS public.qrra_addresses CASCADE;
-DROP VIEW IF EXISTS public.qrra_products CASCADE;
-DROP VIEW IF EXISTS public.qrra_orders CASCADE;
-DROP VIEW IF EXISTS public.qrra_order_items CASCADE;
+-- QRRA: clean install in public schema (no custom schema)
+-- Safe re-run: drops tables only (not views — qrra_* are tables).
 
 DROP TABLE IF EXISTS public.qrra_order_items CASCADE;
 DROP TABLE IF EXISTS public.qrra_orders CASCADE;
