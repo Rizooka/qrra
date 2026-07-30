@@ -165,7 +165,7 @@ export function OrdersTable({ orders }: { orders: Order[] }) {
       {/* Table */}
       <div className="overflow-x-auto border-y-2 border-ink px-4 pb-12 sm:px-8">
         <table className="w-full min-w-[920px] text-left text-sm">
-          <thead className="border-b-2 border-ink bg-ink text-paper">
+          <thead className="border-b-2 border-ink bg-ink text-paper sticky top-0 z-10">
             <tr>
               <th className="w-10 px-3 py-3 text-center">
                 <input

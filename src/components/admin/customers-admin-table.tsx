@@ -75,7 +75,7 @@ export function CustomersAdminTable({ customers }: { customers: Row[] }) {
 
       <div className="mt-4 overflow-x-auto border-2 border-ink">
         <table className="w-full min-w-[850px] text-left text-sm">
-          <thead className="border-b-2 border-ink bg-ink text-paper">
+          <thead className="border-b-2 border-ink bg-ink text-paper sticky top-0 z-10">
             <tr>
               <th className="px-4 py-3 text-[10px] font-extrabold uppercase tracking-[0.14em]">
                 Клиент

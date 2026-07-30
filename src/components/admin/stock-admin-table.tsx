@@ -174,7 +174,7 @@ export function StockAdminTable({ lines }: { lines: StockLine[] }) {
       {/* Table */}
       <div className="mt-4 overflow-x-auto border-2 border-ink">
         <table className="w-full min-w-[980px] text-left text-sm">
-          <thead className="border-b-2 border-ink bg-ink text-paper">
+          <thead className="border-b-2 border-ink bg-ink text-paper sticky top-0 z-10">
             <tr>
               <th className="px-4 py-3 text-[10px] font-extrabold uppercase tracking-[0.14em]">Модель</th>
               <th className="px-4 py-3 text-[10px] font-extrabold uppercase tracking-[0.14em]">Статус</th>
