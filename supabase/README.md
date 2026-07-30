@@ -27,8 +27,9 @@ Optional: **Authentication → Providers → Email** → disable **Confirm email
 
 After first successful login, `qrra.profiles` row is created automatically if missing.
 
+## 2. Make yourself admin
 
-Run SQL **after** you register on the site (so a row exists in `qrra.profiles`).
+Run SQL **after** you can log in (so a row exists in `qrra.profiles`).
 
 1. Dashboard → **SQL Editor** → **New query**
 2. Get your user id:
