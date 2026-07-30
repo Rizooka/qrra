@@ -11,6 +11,7 @@ const nav = [
   { href: "/admin/orders", label: "Заказы" },
   { href: "/admin/products", label: "Товары" },
   { href: "/admin/stock", label: "Склад" },
+  { href: "/admin/stock/receipts", label: "Поступления" },
   { href: "/admin/customers", label: "Клиенты" },
 ];
 

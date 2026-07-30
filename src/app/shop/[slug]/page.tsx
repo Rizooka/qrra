@@ -54,9 +54,29 @@ export default async function ProductPage({ params }: Props) {
           <h1 className="mt-3 font-[family-name:var(--font-display)] text-4xl font-black tracking-tight sm:text-6xl">
             {product.name}
           </h1>
-          <p className="mt-2 text-2xl font-bold tabular-nums">
-            {formatPrice(product.price)}
-          </p>
+          {(() => {
+            const now = new Date();
+            const saleActive =
+              product.sale_price &&
+              product.sale_price > 0 &&
+              product.sale_price < product.price &&
+              (!product.sale_ends_at || new Date(product.sale_ends_at) > now);
+            return saleActive ? (
+              <div className="mt-2 flex items-center gap-3">
+                <p className="text-2xl font-black tabular-nums text-signal">
+                  {formatPrice(product.sale_price!)}
+                </p>
+                <p className="text-lg font-bold tabular-nums text-mute line-through">
+                  {formatPrice(product.price)}
+                </p>
+                <span className="bg-signal px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-paper">SALE</span>
+              </div>
+            ) : (
+              <p className="mt-2 text-2xl font-bold tabular-nums">
+                {formatPrice(product.price)}
+              </p>
+            );
+          })()}
 
           <p className="mt-6 max-w-md leading-relaxed text-mute">
             {product.description}

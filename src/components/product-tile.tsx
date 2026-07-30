@@ -36,6 +36,13 @@ export function ProductTile({
   const photo = primaryProductImage(product);
   const inStock = isInStock(product);
 
+  const now = new Date();
+  const saleActive =
+    product.sale_price &&
+    product.sale_price > 0 &&
+    product.sale_price < product.price &&
+    (!product.sale_ends_at || new Date(product.sale_ends_at) > now);
+
   return (
     <Link
       href={`/shop/${product.slug}`}
@@ -92,6 +99,12 @@ export function ProductTile({
           >
             {stockLabel(product)}
           </span>
+          {/* Sale badge */}
+          {saleActive && (
+            <span className="absolute left-3 bottom-3 z-10 bg-signal px-2 py-1 text-[10px] font-black uppercase tracking-wider text-paper">
+              SALE
+            </span>
+          )}
         </div>
 
         <div
@@ -127,9 +140,22 @@ export function ProductTile({
             {product.color} · {product.lens}
           </p>
         </div>
-        <p className="shrink-0 font-bold tabular-nums">
-          {formatPrice(product.price)}
-        </p>
+        <div className="flex flex-col">
+          {saleActive ? (
+            <div className="flex items-center gap-2">
+              <p className="shrink-0 font-black tabular-nums text-signal">
+                {formatPrice(product.sale_price!)}
+              </p>
+              <p className="shrink-0 font-bold tabular-nums text-mute line-through text-xs">
+                {formatPrice(product.price)}
+              </p>
+            </div>
+          ) : (
+            <p className="shrink-0 font-bold tabular-nums">
+              {formatPrice(product.price)}
+            </p>
+          )}
+        </div>
       </div>
     </Link>
   );

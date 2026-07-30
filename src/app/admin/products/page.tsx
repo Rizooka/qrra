@@ -11,7 +11,7 @@ export default async function AdminProductsPage() {
   const supabase = await createClient();
   const { data: products } = await supabase
     .from(QRRA.products)
-    .select("id, slug, name, price, color_group, is_active, stock")
+    .select("id, slug, name, price, cost_price, sale_price, sale_ends_at, color_group, is_active, stock")
     .order("name");
 
   return (

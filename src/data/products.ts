@@ -5,6 +5,10 @@ export type Product = {
   slug: string;
   name: string;
   price: number;
+  sale_price?: number | null;
+  sale_starts_at?: string | null;
+  sale_ends_at?: string | null;
+  cost_price?: number | null;
   color: string;
   lens: string;
   vibe: string;

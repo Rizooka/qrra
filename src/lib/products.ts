@@ -11,6 +11,10 @@ type DbProduct = {
   slug: string;
   name: string;
   price: number;
+  sale_price?: number | null;
+  sale_starts_at?: string | null;
+  sale_ends_at?: string | null;
+  cost_price?: number | null;
   color: string;
   lens: string;
   vibe: string;
@@ -39,6 +43,10 @@ function mapProduct(row: DbProduct): Product {
     slug: row.slug,
     name: row.name,
     price: row.price,
+    sale_price: row.sale_price ?? null,
+    sale_starts_at: row.sale_starts_at ?? null,
+    sale_ends_at: row.sale_ends_at ?? null,
+    cost_price: row.cost_price ?? null,
     color: row.color,
     lens: row.lens,
     vibe: row.vibe,

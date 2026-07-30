@@ -54,6 +54,15 @@ export default async function EditProductPage({ params }: Props) {
             slug: data.slug,
             name: data.name,
             price: data.price,
+            cost_price: data.cost_price ?? null,
+            sale_price: data.sale_price ?? null,
+            sale_starts_at: data.sale_starts_at
+              ? new Date(data.sale_starts_at).toISOString().slice(0, 16)
+              : "",
+            sale_ends_at: data.sale_ends_at
+              ? new Date(data.sale_ends_at).toISOString().slice(0, 16)
+              : "",
+            low_stock_threshold: data.low_stock_threshold ?? 3,
             color: data.color,
             lens: data.lens,
             vibe: data.vibe,
