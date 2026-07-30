@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/components/cart-provider";
+import { useSound } from "@/components/sound-provider";
 
 const links = [
   { href: "/shop", label: "Магазин" },
@@ -13,6 +14,7 @@ const links = [
 export function SiteHeader() {
   const pathname = usePathname();
   const { count } = useCart();
+  const { playHover } = useSound();
   const onHero = pathname === "/";
 
   return (
@@ -31,6 +33,7 @@ export function SiteHeader() {
             <Link
               key={link.href}
               href={link.href}
+              onMouseEnter={playHover}
               data-cursor="hover"
               className="transition-opacity hover:opacity-60"
             >
@@ -41,6 +44,7 @@ export function SiteHeader() {
 
         <Link
           href="/"
+          onMouseEnter={playHover}
           data-cursor="hover"
           className="absolute left-1/2 -translate-x-1/2 font-[family-name:var(--font-display)] text-lg font-black tracking-tight sm:text-xl"
         >
@@ -50,6 +54,7 @@ export function SiteHeader() {
         <div className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-wide sm:gap-5 sm:text-sm">
           <Link
             href="/account"
+            onMouseEnter={playHover}
             data-cursor="hover"
             className="transition-opacity hover:opacity-60"
           >
@@ -57,6 +62,7 @@ export function SiteHeader() {
           </Link>
           <Link
             href="/cart"
+            onMouseEnter={playHover}
             data-cursor="hover"
             className="transition-opacity hover:opacity-60"
           >

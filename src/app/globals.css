@@ -189,7 +189,9 @@ html.has-custom-cursor * {
 }
 
 html.site-broken body > *:not(.site-grain) {
-  /* physics overlay handles the chaos */
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.3s ease;
 }
 
 @media (prefers-reduced-motion: reduce) {

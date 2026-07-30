@@ -14,6 +14,8 @@ import {
 type SoundContextValue = {
   enabled: boolean;
   toggle: () => void;
+  radioPlaying: boolean;
+  toggleRadio: () => void;
   playHover: () => void;
   playAdd: () => void;
   playClick: () => void;
@@ -60,12 +62,25 @@ function createClickBuffer(ctx: AudioContext, kind: "hover" | "add" | "click" | 
 
 export function SoundProvider({ children }: { children: ReactNode }) {
   const [enabled, setEnabled] = useState(false);
+  const [radioPlaying, setRadioPlaying] = useState(false);
+
   const ctxRef = useRef<AudioContext | null>(null);
   const buffersRef = useRef<Partial<Record<"hover" | "add" | "click" | "break", AudioBuffer>>>({});
 
+  // Web Audio synth drone for QRRA Ambient Radio
+  const droneNodesRef = useRef<{
+    osc1?: OscillatorNode;
+    osc2?: OscillatorNode;
+    filter?: BiquadFilterNode;
+    gain?: GainNode;
+    lfo?: OscillatorNode;
+  } | null>(null);
+
   const ensureCtx = useCallback(async () => {
     if (!ctxRef.current) {
-      const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const Ctx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       ctxRef.current = new Ctx();
     }
     if (ctxRef.current.state === "suspended") {
@@ -95,15 +110,90 @@ export function SoundProvider({ children }: { children: ReactNode }) {
         gain.connect(ctx.destination);
         src.start();
       } catch {
-        // ignore autoplay / audio errors
+        // ignore audio errors
       }
     },
     [enabled, ensureCtx],
   );
 
+  const stopRadio = useCallback(() => {
+    if (droneNodesRef.current) {
+      try {
+        droneNodesRef.current.gain?.gain.exponentialRampToValueAtTime(0.0001, (ctxRef.current?.currentTime || 0) + 0.5);
+        setTimeout(() => {
+          droneNodesRef.current?.osc1?.stop();
+          droneNodesRef.current?.osc2?.stop();
+          droneNodesRef.current?.lfo?.stop();
+          droneNodesRef.current = null;
+        }, 550);
+      } catch {
+        droneNodesRef.current = null;
+      }
+    }
+    setRadioPlaying(false);
+  }, []);
+
+  const startRadio = useCallback(async () => {
+    try {
+      const ctx = await ensureCtx();
+      stopRadio();
+
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const lfo = ctx.createOscillator();
+      const lfoGain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+      const masterGain = ctx.createGain();
+
+      osc1.type = "sawtooth";
+      osc1.frequency.setValueAtTime(55, ctx.currentTime); // Low A
+
+      osc2.type = "sine";
+      osc2.frequency.setValueAtTime(110.5, ctx.currentTime); // Slight detuned octave A
+
+      lfo.type = "sine";
+      lfo.frequency.setValueAtTime(0.2, ctx.currentTime); // Slow breathing LFO
+      lfoGain.gain.setValueAtTime(180, ctx.currentTime);
+
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(320, ctx.currentTime);
+
+      lfo.connect(filter.frequency);
+
+      masterGain.gain.setValueAtTime(0.001, ctx.currentTime);
+      masterGain.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + 1.2);
+
+      osc1.connect(filter);
+      osc2.connect(filter);
+      filter.connect(masterGain);
+      masterGain.connect(ctx.destination);
+
+      osc1.start();
+      osc2.start();
+      lfo.start();
+
+      droneNodesRef.current = { osc1, osc2, filter, gain: masterGain, lfo };
+      setRadioPlaying(true);
+      setEnabled(true);
+    } catch {
+      setRadioPlaying(false);
+    }
+  }, [ensureCtx, stopRadio]);
+
+  const toggleRadio = useCallback(() => {
+    if (radioPlaying) {
+      stopRadio();
+    } else {
+      void startRadio();
+    }
+  }, [radioPlaying, startRadio, stopRadio]);
+
   const toggle = useCallback(() => {
     setEnabled((prev) => {
       const next = !prev;
+      if (!next && radioPlaying) {
+        stopRadio();
+      }
       if (next) {
         void (async () => {
           try {
@@ -124,24 +214,27 @@ export function SoundProvider({ children }: { children: ReactNode }) {
       }
       return next;
     });
-  }, [ensureCtx]);
+  }, [ensureCtx, radioPlaying, stopRadio]);
 
   useEffect(() => {
     return () => {
+      stopRadio();
       void ctxRef.current?.close();
     };
-  }, []);
+  }, [stopRadio]);
 
   const value = useMemo(
     () => ({
       enabled,
       toggle,
+      radioPlaying,
+      toggleRadio,
       playHover: () => void play("hover"),
       playAdd: () => void play("add"),
       playClick: () => void play("click"),
       playBreak: () => void play("break"),
     }),
-    [enabled, toggle, play],
+    [enabled, toggle, radioPlaying, toggleRadio, play],
   );
 
   return <SoundContext.Provider value={value}>{children}</SoundContext.Provider>;

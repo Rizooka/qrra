@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import { useCart } from "@/components/cart-provider";
 import { DeliverySummary } from "@/components/delivery-summary";
+import { DigitalPassport } from "@/components/digital-passport";
 import {
   CheckoutStartTracker,
   trackOrderComplete,
@@ -29,6 +30,7 @@ export function CheckoutForm() {
   const { items, total, clear, ready } = useCart();
   const router = useRouter();
   const [done, setDone] = useState(false);
+  const [createdOrderId, setCreatedOrderId] = useState("");
   const [wasGuest, setWasGuest] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -136,24 +138,32 @@ export function CheckoutForm() {
 
   if (done) {
     return (
-      <section className="bg-ink pt-24 text-paper">
-        <div className="mx-auto max-w-[720px] px-4 py-24 text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.22em] text-acid">
-            Заказ
+      <section className="bg-ink min-h-[100svh] pt-24 text-paper relative overflow-hidden">
+        <div className="absolute inset-0 noise opacity-10" />
+        <div className="mx-auto max-w-[720px] px-4 py-16 text-center relative z-10">
+          <p className="animate-rise font-mono text-xs font-bold uppercase tracking-[0.28em] text-acid">
+            SYSTEM // ORDER ACCEPTED
           </p>
-          <h1 className="mt-4 font-[family-name:var(--font-display)] text-4xl font-black tracking-tight sm:text-5xl">
-            Принят
+          <h1 className="animate-rise-delay mt-4 font-[family-name:var(--font-display)] text-4xl font-black tracking-tight sm:text-6xl text-paper">
+            ЗАКАЗ ПРИНЯТ
           </h1>
-          <p className="mx-auto mt-4 max-w-md text-paper/70">
-            Мы получили заказ. Позвоним или напишем для подтверждения доставки и
-            суммы.
+          <p className="animate-rise-delay-2 mx-auto mt-4 max-w-md text-sm leading-relaxed text-paper/70">
+            Данные отправлены на склад. Мы свяжемся для подтверждения доставки.
           </p>
+
+          <DigitalPassport
+            orderId={createdOrderId || "QRRA-8888"}
+            customerName={name}
+            total={finalTotal}
+            isGuest={wasGuest}
+          />
+
           <div className="mt-10 flex flex-col items-center gap-3">
             {wasGuest ? (
               <Link
                 href="/signup"
                 data-cursor="hover"
-                className="border-2 border-acid bg-acid px-8 py-3 font-[family-name:var(--font-display)] text-sm font-extrabold uppercase tracking-[0.14em] text-ink hover:bg-signal hover:border-signal hover:text-paper"
+                className="border-2 border-acid bg-acid px-8 py-3.5 font-[family-name:var(--font-display)] text-xs font-extrabold uppercase tracking-[0.18em] text-ink transition-colors hover:bg-signal hover:border-signal hover:text-paper"
               >
                 Создать аккаунт
               </Link>
@@ -161,17 +171,17 @@ export function CheckoutForm() {
               <Link
                 href="/account"
                 data-cursor="hover"
-                className="border-2 border-acid bg-acid px-8 py-3 font-[family-name:var(--font-display)] text-sm font-extrabold uppercase tracking-[0.14em] text-ink hover:bg-signal hover:border-signal hover:text-paper"
+                className="border-2 border-acid bg-acid px-8 py-3.5 font-[family-name:var(--font-display)] text-xs font-extrabold uppercase tracking-[0.18em] text-ink transition-colors hover:bg-signal hover:border-signal hover:text-paper"
               >
                 Мои заказы
               </Link>
             )}
             <Link
               href="/shop"
-              className="text-sm font-bold uppercase tracking-wider text-paper/70 underline underline-offset-4 hover:text-acid"
+              className="text-xs font-bold uppercase tracking-wider text-paper/60 underline underline-offset-4 hover:text-acid transition-colors"
               data-cursor="hover"
             >
-              В магазин
+              Вернуться в магазин →
             </Link>
           </div>
         </div>
@@ -260,6 +270,7 @@ export function CheckoutForm() {
     }
 
     setWasGuest(!user);
+    setCreatedOrderId(order.id);
     clear();
     trackOrderComplete(order.id, finalTotal);
     try {
