@@ -3,7 +3,7 @@ import { CustomersAdminTable } from "@/components/admin/customers-admin-table";
 import { QRRA } from "@/lib/db/tables";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata = { title: "Клиенты — Admin QRRA" };
+export const metadata = { title: "Клиенты — QRRA" };
 
 export default async function AdminCustomersPage() {
   const supabase = await createClient();

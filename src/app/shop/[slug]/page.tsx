@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ProductHeroVisual } from "@/components/product-actions";
+import { ProductMedia } from "@/components/product-media";
 import { ProductBuyPanel } from "@/components/product-buy-panel";
 import { ProductTile } from "@/components/product-tile";
 import { ProductViewTracker } from "@/components/product-view-tracker";
 import { formatPrice, products as staticProducts } from "@/data/products";
+import { primaryProductImage } from "@/lib/catalog/product-stock";
+import { productOpenGraph } from "@/lib/site/metadata";
 import { fetchProductBySlug, fetchRelated } from "@/lib/products";
 
 type Props = {
@@ -19,9 +21,16 @@ export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
   const product = await fetchProductBySlug(slug);
   if (!product) return { title: "QRRA" };
+  const image = primaryProductImage(product);
   return {
     title: `${product.name} — QRRA`,
     description: product.description,
+    openGraph: productOpenGraph(
+      product.name,
+      product.description,
+      image,
+      product.slug,
+    ),
   };
 }
 
@@ -36,7 +45,7 @@ export default async function ProductPage({ params }: Props) {
     <>
       <ProductViewTracker slug={product.slug} id={product.id} />
       <section className="border-b-2 border-ink pt-16 lg:grid lg:min-h-[calc(100svh-4rem)] lg:grid-cols-2">
-        <ProductHeroVisual product={product} />
+        <ProductMedia product={product} />
 
         <div className="flex flex-col justify-center border-t-2 border-ink bg-paper px-4 py-12 sm:px-8 lg:border-l-2 lg:border-t-0 lg:px-12">
           <p className="text-xs font-bold uppercase tracking-[0.22em] text-signal">

@@ -24,7 +24,14 @@ type DbProduct = {
   specs: Product["specs"] | null;
   care: string;
   is_active: boolean;
+  stock?: number;
+  images?: string[] | null;
 };
+
+function parseImages(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.filter((x): x is string => typeof x === "string" && x.length > 0);
+}
 
 function mapProduct(row: DbProduct): Product {
   return {
@@ -50,6 +57,8 @@ function mapProduct(row: DbProduct): Product {
     },
     care: row.care,
     isActive: row.is_active,
+    stock: row.stock ?? 10,
+    images: parseImages(row.images),
   };
 }
 

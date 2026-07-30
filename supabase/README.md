@@ -7,7 +7,9 @@ QRRA uses **standard `public` tables** with prefix `qrra_`. No custom schema, no
 Remote (already applied via dashboard MCP during setup):
 
 - `supabase/migrations/20260330120000_qrra_public_init.sql`
-- `supabase/migrations/20260330140000_qrra_events_feedback.sql`
+  - `supabase/migrations/20260330140000_qrra_events_feedback.sql`
+- `supabase/migrations/20260330150000_qrra_guest_orders.sql`
+- `supabase/migrations/20260330170000_qrra_order_notes_stock.sql`
 
 Local CLI:
 

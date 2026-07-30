@@ -1,12 +1,14 @@
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { AnalyticsDashboard } from "@/components/admin/analytics-dashboard";
 import { EventAnalyticsPanel } from "@/components/admin/event-analytics-panel";
+import { StockAnalyticsPanel } from "@/components/admin/stock-analytics-panel";
 import { computeAnalytics } from "@/lib/admin/compute-analytics";
 import { computeEventAnalytics } from "@/lib/admin/compute-event-analytics";
+import { computeStockAnalytics } from "@/lib/admin/compute-stock-analytics";
 import { QRRA } from "@/lib/db/tables";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata = { title: "Аналитика — Admin QRRA" };
+export const metadata = { title: "Аналитика — QRRA" };
 
 export default async function AdminAnalyticsPage() {
   const supabase = await createClient();
@@ -19,6 +21,7 @@ export default async function AdminAnalyticsPage() {
     { data: items },
     { data: profiles },
     { data: events },
+    { data: products },
   ] = await Promise.all([
     supabase
       .from(QRRA.orders)
@@ -35,6 +38,9 @@ export default async function AdminAnalyticsPage() {
       .gte("created_at", since.toISOString())
       .order("created_at", { ascending: false })
       .limit(15000),
+    supabase
+      .from(QRRA.products)
+      .select("id, slug, name, price, stock, is_active"),
   ]);
 
   const snapshot = computeAnalytics(
@@ -43,6 +49,11 @@ export default async function AdminAnalyticsPage() {
     profiles ?? [],
   );
   const eventSnapshot = computeEventAnalytics(events ?? []);
+  const stockSnapshot = computeStockAnalytics(
+    products ?? [],
+    items ?? [],
+    orders ?? [],
+  );
 
   return (
     <div>
@@ -52,6 +63,7 @@ export default async function AdminAnalyticsPage() {
       />
       <div className="px-4 sm:px-8 space-y-16">
         <AnalyticsDashboard data={snapshot} />
+        <StockAnalyticsPanel data={stockSnapshot} />
         <EventAnalyticsPanel data={eventSnapshot} />
       </div>
     </div>

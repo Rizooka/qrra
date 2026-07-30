@@ -5,13 +5,13 @@ import { ProductsAdminTable } from "@/components/admin/products-admin-table";
 import { QRRA } from "@/lib/db/tables";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata = { title: "Товары — Admin QRRA" };
+export const metadata = { title: "Товары — QRRA" };
 
 export default async function AdminProductsPage() {
   const supabase = await createClient();
   const { data: products } = await supabase
     .from(QRRA.products)
-    .select("id, slug, name, price, color_group, is_active")
+    .select("id, slug, name, price, color_group, is_active, stock")
     .order("name");
 
   return (

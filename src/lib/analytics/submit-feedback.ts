@@ -30,7 +30,7 @@ export async function submitFeedback(input: {
   });
 
   if (error) {
-    return { ok: false as const, error: error.message };
+    return { ok: false as const, error: "Не удалось отправить. Попробуй позже." };
   }
 
   track({

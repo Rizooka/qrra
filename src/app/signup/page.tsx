@@ -9,7 +9,7 @@ export default function SignupPage() {
     <section className="bg-paper pt-24">
       <div className="mx-auto max-w-[420px] px-4 pb-24">
         <p className="text-xs font-bold uppercase tracking-[0.22em] text-signal">
-          Система
+          Аккаунт
         </p>
         <h1 className="mt-3 font-[family-name:var(--font-display)] text-4xl font-black tracking-tight">
           Регистрация

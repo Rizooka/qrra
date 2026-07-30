@@ -4,12 +4,12 @@ export function EventAnalyticsPanel({ data }: { data: EventAnalytics }) {
   return (
     <div className="space-y-10">
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat label="События 7д" value={String(data.events7d)} />
-        <Stat label="Уникальные 7д" value={String(data.uniqueVisitors7d)} />
+        <Stat label="Действия на сайте 7д" value={String(data.events7d)} />
+        <Stat label="Посетители 7д" value={String(data.uniqueVisitors7d)} />
         <Stat
-          label="Брошенный checkout 7д"
+          label="Не завершили заказ 7д"
           value={String(data.sessionsWithCheckoutNoOrder7d)}
-          hint="Сессии с checkout без заказа"
+          hint="Начали оформление, но не купили"
         />
         <Stat label="Пожелания 7д" value={String(data.wishSubmits7d)} />
       </div>
@@ -21,7 +21,7 @@ export function EventAnalyticsPanel({ data }: { data: EventAnalytics }) {
         <ProductTable
           title="Интерес к товарам (30д)"
           rows={data.topIntent}
-          empty="Событий по товарам ещё нет."
+          empty="По товарам ещё нет данных."
         />
         <ProductTable
           title="Узкие места: много смотрят, мало в корзину"
@@ -31,32 +31,7 @@ export function EventAnalyticsPanel({ data }: { data: EventAnalytics }) {
         />
       </div>
 
-      <section className="border-2 border-ink bg-paper p-4 text-sm">
-        <p className="font-bold">Бесплатные инструменты (дополнительно)</p>
-        <ul className="mt-2 list-inside list-disc space-y-1 text-mute">
-          <li>
-            <strong className="text-ink">Supabase (уже в QRRA)</strong> — события
-            и пожелания в вашей БД, без лимитов SaaS на события.
-          </li>
-          <li>
-            Microsoft Clarity — бесплатные тепловые карты и записи сессий (поверх
-            нашего трекинга).
-          </li>
-          <li>
-            PostHog Cloud — ~1M событий/мес бесплатно, воронки и когорты, если
-            нужен UI аналитики.
-          </li>
-          <li>
-            Umami / Plausible — лёгкая веб-аналитика без cookie-маркетинга (самохост
-            или подписка).
-          </li>
-        </ul>
-        <p className="mt-3 text-mute">
-          Для «каждый пиксель на продажу» в QRRA: события + пожелания + воронка в
-          админке; Clarity — для визуального «где кликают»; PostHog — если нужны
-          A/B и сложные сегменты без своего кода.
-        </p>
-      </section>
+
     </div>
   );
 }
@@ -102,7 +77,7 @@ function FunnelTable({
               Шаг
             </th>
             <th className="px-3 py-2 text-right text-[10px] font-bold uppercase">
-              События
+              Кол-во
             </th>
             <th className="px-3 py-2 text-right text-[10px] font-bold uppercase">
               От пред.
@@ -145,16 +120,16 @@ function ProductTable({
         <thead className="bg-ink text-paper">
           <tr>
             <th className="px-3 py-2 text-left text-[10px] font-bold uppercase">
-              Slug
+              Модель
             </th>
             <th className="px-3 py-2 text-right text-[10px] font-bold uppercase">
-              View
+              Смотрели
             </th>
             <th className="px-3 py-2 text-right text-[10px] font-bold uppercase">
-              Cart
+              В корзину
             </th>
             <th className="px-3 py-2 text-right text-[10px] font-bold uppercase">
-              {leaky ? "View→Cart" : "Score"}
+              {leaky ? "Смотрели→корзина" : "Интерес"}
             </th>
           </tr>
         </thead>

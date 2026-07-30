@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import { SERVICE_UNAVAILABLE } from "@/lib/auth-user-messages";
 import { createClient } from "@/lib/supabase/client";
 
 export function ForgotPasswordForm() {
@@ -19,7 +20,7 @@ export function ForgotPasswordForm() {
       supabase = createClient();
     } catch (err) {
       setLoading(false);
-      setError(err instanceof Error ? err.message : "Ошибка конфигурации.");
+      setError(SERVICE_UNAVAILABLE);
       return;
     }
 
@@ -30,7 +31,7 @@ export function ForgotPasswordForm() {
     });
     setLoading(false);
     if (err) {
-      setError(err.message);
+      setError("Не удалось отправить письмо. Проверь email и попробуй снова.");
       return;
     }
     setDone(true);

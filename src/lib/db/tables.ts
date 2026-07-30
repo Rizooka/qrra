@@ -7,4 +7,5 @@ export const QRRA = {
   order_items: "qrra_order_items",
   events: "qrra_events",
   feedback: "qrra_feedback",
+  promo_codes: "qrra_promo_codes",
 } as const;

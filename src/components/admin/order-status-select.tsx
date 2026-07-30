@@ -5,8 +5,6 @@ import {
   ORDER_STATUSES,
   ORDER_STATUS_LABEL,
 } from "@/lib/admin/order-status";
-import { QRRA } from "@/lib/db/tables";
-import { createClient } from "@/lib/supabase/client";
 
 export function OrderStatusSelect({
   id,
@@ -22,14 +20,21 @@ export function OrderStatusSelect({
       data-cursor="hover"
       className="border-2 border-ink bg-paper px-3 py-2 text-xs font-bold uppercase tracking-wider outline-none"
       onChange={async (e) => {
-        const supabase = createClient();
-        await supabase
-          .from(QRRA.orders)
-          .update({
-            status: e.target.value,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", id);
+        const next = e.target.value;
+        const previousStatus = status;
+        const res = await fetch("/api/admin/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId: id,
+            status: next,
+            previousStatus,
+          }),
+        });
+        if (!res.ok) {
+          e.target.value = status;
+          return;
+        }
         router.refresh();
       }}
     >

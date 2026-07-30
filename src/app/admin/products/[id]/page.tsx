@@ -70,6 +70,10 @@ export default async function EditProductPage({ params }: Props) {
             warranty: specs.warranty ?? "Lifetime",
             care: data.care,
             is_active: data.is_active,
+            stock: data.stock ?? 10,
+            images: Array.isArray(data.images)
+              ? (data.images as string[])
+              : [],
           }}
         />
       </div>

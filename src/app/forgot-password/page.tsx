@@ -13,8 +13,7 @@ export default function ForgotPasswordPage() {
           Сброс пароля
         </h1>
         <p className="mt-2 text-sm text-mute">
-          Ссылка придёт на почту. Если аккаунт уже был в этом Supabase — пароль
-          сбросится для него.
+          Отправим ссылку на почту. По ней можно задать новый пароль.
         </p>
         <ForgotPasswordForm />
       </div>

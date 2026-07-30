@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRef, useState } from "react";
@@ -7,6 +8,7 @@ import { GlassesVisual } from "@/components/glasses-visual";
 import { FlashWearer } from "@/components/flash-wearer";
 import { formatPrice, type Product } from "@/data/products";
 import { track } from "@/lib/analytics/track";
+import { isInStock, primaryProductImage, stockLabel } from "@/lib/catalog/product-stock";
 import { useSound } from "@/components/sound-provider";
 import { useLiteMode } from "@/hooks/use-lite-mode";
 
@@ -31,6 +33,8 @@ export function ProductTile({
   const [active, setActive] = useState(false);
   const hovered = useRef(false);
   const useLiquid = liquid && !lite;
+  const photo = primaryProductImage(product);
+  const inStock = isInStock(product);
 
   return (
     <Link
@@ -58,9 +62,18 @@ export function ProductTile({
       }}
     >
       <div className="product-tile-media relative aspect-[4/3] overflow-hidden bg-white">
+        {photo ? (
+          <Image
+            src={photo}
+            alt={product.name}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 50vw, 25vw"
+          />
+        ) : null}
         <div
           className={`tile-default absolute inset-0 flex items-center justify-center bg-white ${
-            active ? "invisible" : ""
+            active || photo ? "invisible" : ""
           }`}
         >
           <div className="absolute inset-0 diagonal-stripes opacity-50" />
@@ -71,6 +84,13 @@ export function ProductTile({
           />
           <span className="absolute left-3 top-3 z-10 bg-ink px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-paper">
             {product.vibe}
+          </span>
+          <span
+            className={`absolute right-3 top-3 z-10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider ${
+              inStock ? "bg-acid text-ink" : "bg-signal text-paper"
+            }`}
+          >
+            {stockLabel(product)}
           </span>
         </div>
 

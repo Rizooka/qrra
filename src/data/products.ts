@@ -23,6 +23,8 @@ export type Product = {
   };
   care: string;
   isActive?: boolean;
+  stock?: number;
+  images?: string[];
 };
 
 export const products: Product[] = [

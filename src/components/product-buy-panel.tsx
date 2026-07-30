@@ -4,6 +4,7 @@ import { FeedbackPanel } from "@/components/feedback-panel";
 import { useState } from "react";
 import { AddToCartButton } from "@/components/product-actions";
 import type { Product } from "@/data/products";
+import { stockLabel } from "@/lib/catalog/product-stock";
 import Link from "next/link";
 
 export function ProductBuyPanel({ product }: { product: Product }) {
@@ -11,6 +12,9 @@ export function ProductBuyPanel({ product }: { product: Product }) {
 
   return (
     <div className="mt-8 space-y-8">
+      <p className="text-sm font-bold uppercase tracking-wider text-signal">
+        {stockLabel(product)}
+      </p>
       <div>
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-mute">
           Посадка

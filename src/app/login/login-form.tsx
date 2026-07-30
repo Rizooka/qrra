@@ -3,21 +3,11 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useState } from "react";
+import {
+  mapLoginError,
+  SERVICE_UNAVAILABLE,
+} from "@/lib/auth-user-messages";
 import { createClient } from "@/lib/supabase/client";
-
-function mapLoginError(message: string) {
-  const lower = message.toLowerCase();
-  if (
-    lower.includes("invalid login credentials") ||
-    lower.includes("invalid email or password")
-  ) {
-    return "Неверный email или пароль. Если email уже был в этом Supabase (другой проект) — сбрось пароль.";
-  }
-  if (lower.includes("email not confirmed")) {
-    return "Подтверди email: письмо от Supabase или сброс пароля.";
-  }
-  return message;
-}
 
 export function LoginForm() {
   const router = useRouter();
@@ -37,9 +27,7 @@ export function LoginForm() {
       supabase = createClient();
     } catch (e) {
       setLoading(false);
-      setError(
-        e instanceof Error ? e.message : "Неверная конфигурация Supabase.",
-      );
+      setError(SERVICE_UNAVAILABLE);
       return;
     }
     const { error: err } = await supabase.auth.signInWithPassword({

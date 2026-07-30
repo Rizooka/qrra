@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ContactLinks } from "@/components/contact-links";
 import { FeedbackFooterSection } from "@/components/feedback-footer-section";
 import { DestroySite } from "@/components/destroy-site";
 
@@ -45,6 +46,15 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link
+                href="/delivery"
+                className="hover:text-signal"
+                data-cursor="hover"
+              >
+                Доставка и возврат
+              </Link>
+            </li>
+            <li>
               <Link href="/cart" className="hover:text-signal" data-cursor="hover">
                 Корзина
               </Link>
@@ -56,11 +66,7 @@ export function SiteFooter() {
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-acid">
             Связь
           </p>
-          <ul className="mt-4 space-y-2 text-sm text-paper/80">
-            <li>hello@qrra.store</li>
-            <li>@qrra</li>
-            <li>Доставка по Узбекистану · 30 дней на возврат</li>
-          </ul>
+          <ContactLinks message="Здравствуйте! Вопрос по QRRA." />
         </div>
       </div>
 

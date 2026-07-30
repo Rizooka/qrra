@@ -8,6 +8,7 @@ import { UvSticker } from "@/components/uv-sticker";
 import { useSound } from "@/components/sound-provider";
 import { useLiteMode } from "@/hooks/use-lite-mode";
 import { track } from "@/lib/analytics/track";
+import { isInStock } from "@/lib/catalog/product-stock";
 import { formatPrice, type Product } from "@/data/products";
 
 const LiquidPortrait = dynamic(
@@ -27,12 +28,15 @@ export function AddToCartButton({ product }: { product: Product }) {
   const { add } = useCart();
   const { playAdd } = useSound();
   const [added, setAdded] = useState(false);
+  const available = isInStock(product);
 
   return (
     <button
       type="button"
       data-cursor="hover"
+      disabled={!available}
       onClick={() => {
+        if (!available) return;
         add(product);
         track({
           event: "add_to_cart",
@@ -44,9 +48,13 @@ export function AddToCartButton({ product }: { product: Product }) {
         setAdded(true);
         window.setTimeout(() => setAdded(false), 1600);
       }}
-      className="w-full border-2 border-ink bg-signal px-6 py-4 font-[family-name:var(--font-display)] text-sm font-extrabold uppercase tracking-[0.14em] text-paper transition-colors hover:bg-ink sm:w-auto"
+      className="w-full border-2 border-ink bg-signal px-6 py-4 font-[family-name:var(--font-display)] text-sm font-extrabold uppercase tracking-[0.14em] text-paper transition-colors hover:bg-ink disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
     >
-      {added ? "Добавлено" : `В корзину · ${formatPrice(product.price)}`}
+      {!available
+        ? "Нет в наличии"
+        : added
+          ? "Добавлено"
+          : `В корзину · ${formatPrice(product.price)}`}
     </button>
   );
 }

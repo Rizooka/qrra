@@ -1,7 +1,7 @@
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { ProductForm } from "../product-form";
 
-export const metadata = { title: "Новый товар — Admin QRRA" };
+export const metadata = { title: "Новый товар — QRRA" };
 
 export default function NewProductPage() {
   return (

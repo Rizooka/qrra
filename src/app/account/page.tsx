@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatPrice } from "@/data/products";
 import { AccountProfileForm } from "./profile-form";
 import { AddressForm } from "./address-form";
+import { OrderRepeatButton } from "@/components/order-repeat-button";
 import { SignOutButton } from "./sign-out-button";
 
 export const metadata = {
@@ -42,7 +43,7 @@ export default async function AccountPage() {
     supabase
       .from(QRRA.orders)
       .select(
-        "id, status, total, shipping, created_at, qrra_order_items(product_name, qty, price)",
+        "id, status, total, shipping, created_at, qrra_order_items(product_name, product_slug, qty, price)",
       )
       .eq("user_id", user.id)
       .order("created_at", { ascending: false }),
@@ -68,7 +69,7 @@ export default async function AccountPage() {
                 data-cursor="hover"
                 className="border-2 border-ink bg-acid px-4 py-2 text-xs font-extrabold uppercase tracking-[0.14em] text-ink"
               >
-                Админка
+                Управление
               </Link>
             ) : null}
             <SignOutButton />
@@ -115,6 +116,7 @@ export default async function AccountPage() {
             {(orders ?? []).map((order) => {
               const items = (order.qrra_order_items ?? []) as {
                 product_name: string;
+                product_slug: string;
                 qty: number;
                 price: number;
               }[];
@@ -138,6 +140,7 @@ export default async function AccountPage() {
                       </li>
                     ))}
                   </ul>
+                  <OrderRepeatButton items={items} />
                 </li>
               );
             })}

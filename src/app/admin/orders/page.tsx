@@ -2,13 +2,14 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { OrderStatusBadge } from "@/components/admin/order-status-badge";
+import { ExportOrdersButton } from "@/components/admin/export-orders-button";
 import { OrdersStatusFilter } from "@/components/admin/orders-status-filter";
 import { QRRA } from "@/lib/db/tables";
 import { createClient } from "@/lib/supabase/server";
 import { formatPrice } from "@/data/products";
 import { ORDER_STATUSES, type OrderStatus } from "@/lib/admin/order-status";
 
-export const metadata = { title: "Заказы — Admin QRRA" };
+export const metadata = { title: "Заказы — QRRA" };
 
 type Props = { searchParams: Promise<{ status?: string }> };
 
@@ -37,6 +38,7 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
       <AdminPageHeader
         title="Заказы"
         description="Статусы, доставка, клиент."
+        actions={<ExportOrdersButton />}
       />
       <Suspense fallback={null}>
         <OrdersStatusFilter />
@@ -66,6 +68,7 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
           <tbody>
             {(orders ?? []).map((order) => {
               const shipping = (order.shipping ?? {}) as {
+                name?: string;
                 city?: string;
                 delivery?: string;
               };
@@ -91,7 +94,9 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
                     </Link>
                   </td>
                   <td className="px-4 py-3">
-                    <p className="font-bold">{p?.full_name || "—"}</p>
+                    <p className="font-bold">
+                      {p?.full_name || shipping.name || "—"}
+                    </p>
                     <p className="text-xs text-mute">
                       {p?.phone || "—"} · {p?.email || "—"}
                     </p>

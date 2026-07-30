@@ -2,12 +2,13 @@ import Link from "next/link";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { OrderStatusBadge } from "@/components/admin/order-status-badge";
 import { computeAnalytics } from "@/lib/admin/compute-analytics";
+import { computeStockAnalytics } from "@/lib/admin/compute-stock-analytics";
 import { QRRA } from "@/lib/db/tables";
 import { createClient } from "@/lib/supabase/server";
 import { formatPrice } from "@/data/products";
 import { ORDER_STATUSES, ORDER_STATUS_LABEL } from "@/lib/admin/order-status";
 
-export const metadata = { title: "Обзор — Admin QRRA" };
+export const metadata = { title: "Обзор — QRRA" };
 
 export default async function AdminHomePage() {
   const supabase = await createClient();
@@ -20,6 +21,7 @@ export default async function AdminHomePage() {
     { data: allOrders },
     { data: profiles },
     { data: items },
+    { data: productRows },
   ] = await Promise.all([
     supabase.from(QRRA.products).select("*", { count: "exact", head: true }),
     supabase.from(QRRA.orders).select("*", { count: "exact", head: true }),
@@ -36,12 +38,20 @@ export default async function AdminHomePage() {
     supabase
       .from(QRRA.order_items)
       .select("order_id, product_name, product_slug, qty, price"),
+    supabase
+      .from(QRRA.products)
+      .select("id, slug, name, price, stock, is_active"),
   ]);
 
   const analytics = computeAnalytics(
     allOrders ?? [],
     items ?? [],
     profiles ?? [],
+  );
+  const stock = computeStockAnalytics(
+    productRows ?? [],
+    items ?? [],
+    allOrders ?? [],
   );
 
   const byStatus = ORDER_STATUSES.map((status) => ({
@@ -69,6 +79,12 @@ export default async function AdminHomePage() {
       label: "Средний чек",
       value: formatPrice(Math.round(analytics.aov)),
       isMoney: true,
+    },
+    {
+      href: "/admin/stock",
+      label: "Нет в наличии",
+      value: stock.outOfStockCount,
+      alert: stock.outOfStockCount > 0,
     },
   ];
 
@@ -98,7 +114,9 @@ export default async function AdminHomePage() {
             key={c.label}
             href={c.href}
             data-cursor="hover"
-            className="border-2 border-ink bg-paper p-5 transition-colors hover:bg-acid/30"
+            className={`border-2 border-ink bg-paper p-5 transition-colors hover:bg-acid/30 ${
+              "alert" in c && c.alert ? "border-signal bg-signal/10" : ""
+            }`}
           >
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-mute">
               {c.label}

@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { QRRA } from "@/lib/db/tables";
 import { createClient } from "@/lib/supabase/client";
+import { ProductImageUpload } from "@/components/admin/product-image-upload";
 import type { ColorGroup } from "@/data/products";
 
 type ProductFormValues = {
@@ -27,6 +28,8 @@ type ProductFormValues = {
   warranty: string;
   care: string;
   is_active: boolean;
+  stock: number;
+  images: string[];
 };
 
 const groups: ColorGroup[] = ["acid", "signal", "black", "cold", "heat"];
@@ -54,6 +57,8 @@ export function ProductForm({ initial }: { initial?: ProductFormValues }) {
       warranty: "Lifetime",
       care: "",
       is_active: true,
+      stock: 10,
+      images: [],
     },
   );
   const [error, setError] = useState("");
@@ -95,6 +100,8 @@ export function ProductForm({ initial }: { initial?: ProductFormValues }) {
       },
       care: values.care,
       is_active: values.is_active,
+      stock: Math.max(0, Number(values.stock)),
+      images: values.images,
       updated_at: new Date().toISOString(),
     };
 
@@ -154,8 +161,9 @@ export function ProductForm({ initial }: { initial?: ProductFormValues }) {
         </p>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           {field("name", "Название")}
-          {field("slug", "Slug")}
+          {field("slug", "Код модели (URL)")}
           {field("price", "Цена", { type: "number" })}
+          {field("stock", "Остаток (шт.)", { type: "number" })}
           {field("color", "Цвет")}
           {field("lens", "Линзы")}
           {field("vibe", "Vibe")}
@@ -167,7 +175,21 @@ export function ProductForm({ initial }: { initial?: ProductFormValues }) {
 
       <div className="sm:col-span-2 border-2 border-ink p-4">
         <p className="text-xs font-bold uppercase tracking-[0.16em] text-signal">
-          Визуал
+          Фото
+        </p>
+        <div className="mt-4">
+          <ProductImageUpload
+            productId={values.id}
+            slug={values.slug}
+            images={values.images}
+            onChange={(urls) => set("images", urls)}
+          />
+        </div>
+      </div>
+
+      <div className="sm:col-span-2 border-2 border-ink p-4">
+        <p className="text-xs font-bold uppercase tracking-[0.16em] text-signal">
+          Визуал (без фото)
         </p>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           {field("accent", "Accent")}

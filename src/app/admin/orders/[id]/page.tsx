@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { OrderStatusBadge } from "@/components/admin/order-status-badge";
+import { OrderNotesForm } from "@/components/admin/order-notes-form";
 import { OrderStatusSelect } from "@/components/admin/order-status-select";
 import { QRRA } from "@/lib/db/tables";
 import { createClient } from "@/lib/supabase/server";
@@ -11,7 +12,7 @@ type Props = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
-  return { title: `Заказ ${id.slice(0, 8)} — Admin QRRA` };
+  return { title: `Заказ ${id.slice(0, 8)} — QRRA` };
 }
 
 export default async function AdminOrderDetailPage({ params }: Props) {
@@ -21,7 +22,7 @@ export default async function AdminOrderDetailPage({ params }: Props) {
   const { data: order } = await supabase
     .from(QRRA.orders)
     .select(
-      "id, status, total, shipping, created_at, updated_at, user_id, qrra_order_items(product_name, product_slug, qty, price), qrra_profiles(full_name, phone, email)",
+      "id, status, total, shipping, notes, created_at, updated_at, user_id, qrra_order_items(product_name, product_slug, qty, price), qrra_profiles(full_name, phone, email)",
     )
     .eq("id", id)
     .maybeSingle();
@@ -110,7 +111,11 @@ export default async function AdminOrderDetailPage({ params }: Props) {
                   Профиль клиента →
                 </Link>
               </div>
-            ) : null}
+            ) : (
+              <p className="text-xs font-bold uppercase tracking-wider text-signal">
+                Гостевой заказ
+              </p>
+            )}
           </dl>
         </section>
 
@@ -126,6 +131,8 @@ export default async function AdminOrderDetailPage({ params }: Props) {
             {shipping.delivery ?? "—"}
           </p>
         </section>
+
+        <OrderNotesForm orderId={order.id} initialNotes={order.notes ?? ""} />
 
         <section className="border-2 border-ink lg:col-span-2">
           <h2 className="border-b-2 border-ink px-5 py-3 font-[family-name:var(--font-display)] text-lg font-extrabold">

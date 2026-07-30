@@ -39,9 +39,7 @@ export async function updateSession(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
   const needsAuth =
-    path.startsWith("/account") ||
-    path.startsWith("/admin") ||
-    path.startsWith("/checkout");
+    path.startsWith("/account") || path.startsWith("/admin");
 
   if (needsAuth && !user) {
     const redirect = request.nextUrl.clone();

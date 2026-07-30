@@ -4,7 +4,7 @@ import { FEEDBACK_KIND_LABEL } from "@/lib/analytics/event-names";
 import { QRRA } from "@/lib/db/tables";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata = { title: "Пожелания — Admin QRRA" };
+export const metadata = { title: "Пожелания — QRRA" };
 
 export default async function AdminFeedbackPage() {
   const supabase = await createClient();
@@ -18,7 +18,7 @@ export default async function AdminFeedbackPage() {
     <div>
       <AdminPageHeader
         title="Пожелания и идеи"
-        description="Что просят клиенты — для каталога, дропов и сервиса."
+        description="Сообщения клиентов о каталоге и сервисе."
       />
       <ul className="mx-4 divide-y-2 divide-ink border-2 border-ink sm:mx-8">
         {(rows ?? []).map((row) => (
@@ -28,7 +28,7 @@ export default async function AdminFeedbackPage() {
                 {FEEDBACK_KIND_LABEL[row.kind as FeedbackKind] ?? row.kind}
               </span>
               {row.product_slug ? (
-                <span>товар: {row.product_slug}</span>
+                <span>модель: {row.product_slug}</span>
               ) : null}
               <span>
                 {new Date(row.created_at).toLocaleString("ru-RU")}

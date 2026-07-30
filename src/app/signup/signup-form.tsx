@@ -3,6 +3,10 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+import {
+  mapSignupError,
+  SERVICE_UNAVAILABLE,
+} from "@/lib/auth-user-messages";
 import { createClient } from "@/lib/supabase/client";
 import { syncSignupProfile } from "@/lib/sync-signup-profile";
 
@@ -26,11 +30,7 @@ export function SignupForm() {
       supabase = createClient();
     } catch (e) {
       setLoading(false);
-      setError(
-        e instanceof Error
-          ? e.message
-          : "Неверная конфигурация Supabase на сервере.",
-      );
+      setError(SERVICE_UNAVAILABLE);
       return;
     }
     const { data, error: err } = await supabase.auth.signUp({
@@ -46,27 +46,7 @@ export function SignupForm() {
     });
     setLoading(false);
     if (err) {
-      const msg = err.message;
-      if (
-        msg.includes("Invalid path") ||
-        msg.includes("PGRST125") ||
-        msg.includes("No host")
-      ) {
-        setError(
-          "Неверный NEXT_PUBLIC_SUPABASE_URL в Vercel. Нужен Project URL: https://xxx.supabase.co (Settings → API), не connection string и не /rest/v1.",
-        );
-        return;
-      }
-      if (
-        err.message.toLowerCase().includes("already registered") ||
-        err.code === "user_already_exists"
-      ) {
-        setError(
-          "Этот email уже в Supabase (возможно, другой проект на том же аккаунте). Войди с тем паролем или сбрось пароль.",
-        );
-        return;
-      }
-      setError(msg);
+      setError(mapSignupError(err.message, err.code));
       return;
     }
 
@@ -82,7 +62,7 @@ export function SignupForm() {
     }
     if (data.user) {
       setInfo(
-        "Аккаунт создан. Если включено подтверждение email — открой письмо. Или войди, если пароль уже задан.",
+        "Аккаунт создан. Если нужно — подтверди email по ссылке из письма, затем войди.",
       );
       return;
     }
@@ -149,10 +129,10 @@ export function SignupForm() {
         data-cursor="hover"
         className="w-full border-2 border-ink bg-ink px-6 py-4 font-[family-name:var(--font-display)] text-sm font-extrabold uppercase tracking-[0.14em] text-paper hover:bg-signal disabled:opacity-60"
       >
-        {loading ? "…" : "Создать доступ"}
+        {loading ? "…" : "Создать аккаунт"}
       </button>
       <p className="text-sm text-mute">
-        Уже в системе?{" "}
+        Уже есть аккаунт?{" "}
         <Link
           href="/login"
           data-cursor="hover"

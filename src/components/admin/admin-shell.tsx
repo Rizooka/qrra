@@ -10,6 +10,7 @@ const nav = [
   { href: "/admin/feedback", label: "Пожелания" },
   { href: "/admin/orders", label: "Заказы" },
   { href: "/admin/products", label: "Товары" },
+  { href: "/admin/stock", label: "Склад" },
   { href: "/admin/customers", label: "Клиенты" },
 ];
 
@@ -25,7 +26,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
               QRRA
             </p>
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-paper/50">
-              Admin
+              Управление
             </p>
           </div>
           <Link

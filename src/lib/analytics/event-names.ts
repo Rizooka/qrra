@@ -19,5 +19,5 @@ export type FeedbackKind = (typeof FEEDBACK_KINDS)[number];
 export const FEEDBACK_KIND_LABEL: Record<FeedbackKind, string> = {
   wish: "Пожелание",
   product_idea: "Идея товара",
-  recommendation: "Рекомендация",
+  recommendation: "Совет",
 };

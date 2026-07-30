@@ -11,6 +11,7 @@ type Row = {
   price: number;
   color_group: string;
   is_active: boolean;
+  stock: number;
 };
 
 export function ProductsAdminTable({ products }: { products: Row[] }) {
@@ -66,6 +67,9 @@ export function ProductsAdminTable({ products }: { products: Row[] }) {
                 Цена
               </th>
               <th className="px-4 py-3 text-[10px] font-extrabold uppercase tracking-[0.14em]">
+                Остаток
+              </th>
+              <th className="px-4 py-3 text-[10px] font-extrabold uppercase tracking-[0.14em]">
                 Статус
               </th>
               <th className="px-4 py-3 text-[10px] font-extrabold uppercase tracking-[0.14em]">
@@ -82,6 +86,7 @@ export function ProductsAdminTable({ products }: { products: Row[] }) {
                   {p.color_group}
                 </td>
                 <td className="px-4 py-3 tabular-nums">{formatPrice(p.price)}</td>
+                <td className="px-4 py-3 tabular-nums">{p.stock}</td>
                 <td className="px-4 py-3">
                   <span
                     className={`text-[10px] font-bold uppercase tracking-wider ${

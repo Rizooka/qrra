@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCart } from "@/components/cart-provider";
 import { CartViewTracker } from "@/components/cart-view-tracker";
+import { DeliverySummary } from "@/components/delivery-summary";
 import { GlassesVisual } from "@/components/glasses-visual";
 import { formatPrice } from "@/data/products";
 import { track } from "@/lib/analytics/track";
@@ -162,8 +163,17 @@ export default function CartPage() {
               </div>
             </div>
             <p className="mt-3 text-xs text-mute">
-              Доставка по Узбекистану · 30 дней на возврат.
+              <Link
+                href="/delivery"
+                className="font-bold underline underline-offset-2 hover:text-signal"
+                data-cursor="hover"
+              >
+                Доставка и возврат
+              </Link>
             </p>
+            <div className="mt-6">
+              <DeliverySummary compact />
+            </div>
           </>
         )}
       </div>
