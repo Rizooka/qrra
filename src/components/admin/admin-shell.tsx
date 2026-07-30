@@ -9,6 +9,7 @@ const nav = [
   { href: "/admin/analytics", label: "Аналитика" },
   { href: "/admin/feedback", label: "Пожелания" },
   { href: "/admin/orders", label: "Заказы" },
+  { href: "/admin/promo", label: "Промокоды" },
   { href: "/admin/products", label: "Товары" },
   { href: "/admin/stock", label: "Склад" },
   { href: "/admin/stock/receipts", label: "Поступления" },

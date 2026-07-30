@@ -38,6 +38,7 @@ export default async function AdminOrderDetailPage({ params }: Props) {
     delivery?: string;
     tracking_number?: string;
     carrier?: string;
+    promo_code?: string;
   };
   const items = (order.qrra_order_items ?? []) as {
     product_name: string;
@@ -84,6 +85,12 @@ export default async function AdminOrderDetailPage({ params }: Props) {
             </p>
             <OrderStatusBadge status={order.status} />
           </div>
+          {shipping.promo_code && (
+            <div className="mt-4 border border-ink/30 bg-acid/20 px-3 py-1.5 flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-mute">Промокод:</span>
+              <span className="font-mono text-sm font-black text-ink">{shipping.promo_code}</span>
+            </div>
+          )}
           <div className="mt-6">
             <p className="text-xs font-bold uppercase tracking-wider text-mute">Статус</p>
             <div className="mt-2">
