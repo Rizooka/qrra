@@ -60,3 +60,9 @@ Log out and log in again. `/admin` should open.
 Use **`supabase/reset_qrra.sql`** (drops `qrra_*` **tables** — not `DROP VIEW`). Then re-apply the migration file from the `-- Tables` section, or `npx supabase db push`.
 
 Does **not** delete `auth.users`.
+
+## 503 / schema cache errors
+
+If login works but `/rest/v1/qrra_*` returns **503** and the client says **Could not query the database for the schema cache**, PostgREST is often configured with a **missing schema** in `pgrst.db_schemas` (e.g. old `qrra` after we moved tables to `public`).
+
+Run **`supabase/fix_postgrest_schema_cache.sql`** in SQL Editor, then reload the site.

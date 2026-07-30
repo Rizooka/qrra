@@ -25,6 +25,12 @@ export default async function AccountPage() {
   if (!user) redirect("/login?next=/account");
 
   const profile = (await ensureProfile(user)) ?? (await getProfile());
+  const meta = user.user_metadata as Record<string, unknown>;
+  const displayName =
+    profile?.full_name ??
+    (typeof meta.full_name === "string" ? meta.full_name : "");
+  const displayPhone =
+    profile?.phone ?? (typeof meta.phone === "string" ? meta.phone : "");
   const supabase = await createClient();
 
   const [{ data: addresses }, { data: orders }] = await Promise.all([
@@ -69,10 +75,7 @@ export default async function AccountPage() {
           </div>
         </div>
 
-        <AccountProfileForm
-          fullName={profile?.full_name ?? ""}
-          phone={profile?.phone ?? ""}
-        />
+        <AccountProfileForm fullName={displayName} phone={displayPhone} />
 
         <div>
           <h2 className="font-[family-name:var(--font-display)] text-2xl font-extrabold tracking-tight">
