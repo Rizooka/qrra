@@ -6,6 +6,8 @@ import type { ReactNode } from "react";
 
 const nav = [
   { href: "/admin", label: "Обзор", exact: true },
+  { href: "/admin/analytics", label: "Аналитика" },
+  { href: "/admin/feedback", label: "Пожелания" },
   { href: "/admin/orders", label: "Заказы" },
   { href: "/admin/products", label: "Товары" },
   { href: "/admin/customers", label: "Клиенты" },

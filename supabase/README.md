@@ -7,6 +7,7 @@ QRRA uses **standard `public` tables** with prefix `qrra_`. No custom schema, no
 Remote (already applied via dashboard MCP during setup):
 
 - `supabase/migrations/20260330120000_qrra_public_init.sql`
+- `supabase/migrations/20260330140000_qrra_events_feedback.sql`
 
 Local CLI:
 
@@ -24,6 +25,14 @@ npx supabase db push
 | `qrra_products` | Catalog (8 models seeded) |
 | `qrra_orders` | Orders |
 | `qrra_order_items` | Line items |
+| `qrra_events` | Behavioral analytics (page, cart, checkout) |
+| `qrra_feedback` | Wishes / product ideas / recommendations |
+
+## Analytics
+
+Storefront sends events to `qrra_events` (anon insert, admin read). Feedback forms write to `qrra_feedback`. Admin: **Аналитика** and **Пожелания**.
+
+Optional free overlays: Microsoft Clarity (heatmaps), PostHog (funnels UI), Umami/Plausible (light web stats).
 
 Trigger `qrra_on_auth_user_created` creates `qrra_profiles` on signup (name/phone from registration form).
 

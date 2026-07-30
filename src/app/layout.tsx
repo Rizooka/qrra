@@ -4,6 +4,7 @@ import { CartProvider } from "@/components/cart-provider";
 import { SoundProvider } from "@/components/sound-provider";
 import { SiteChrome } from "@/components/site-chrome";
 import { SoundToggle } from "@/components/sound-toggle";
+import { AnalyticsProvider } from "@/components/analytics-provider";
 import { ClientEffects } from "@/components/client-effects";
 import "./globals.css";
 
@@ -37,6 +38,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col antialiased">
         <SoundProvider>
           <CartProvider>
+            <AnalyticsProvider />
             <SiteChrome>{children}</SiteChrome>
           </CartProvider>
           <SoundToggle />

@@ -3,6 +3,8 @@
 -- migrations/20260330120000_qrra_public_init.sql (from "-- Tables" onward)
 -- OR use: npx supabase db push
 
+DROP TABLE IF EXISTS public.qrra_events CASCADE;
+DROP TABLE IF EXISTS public.qrra_feedback CASCADE;
 DROP TABLE IF EXISTS public.qrra_order_items CASCADE;
 DROP TABLE IF EXISTS public.qrra_orders CASCADE;
 DROP TABLE IF EXISTS public.qrra_addresses CASCADE;

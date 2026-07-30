@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { OrderStatusBadge } from "@/components/admin/order-status-badge";
+import { computeAnalytics } from "@/lib/admin/compute-analytics";
 import { QRRA } from "@/lib/db/tables";
 import { createClient } from "@/lib/supabase/server";
 import { formatPrice } from "@/data/products";
@@ -17,6 +18,8 @@ export default async function AdminHomePage() {
     { count: customersCount },
     { data: recent },
     { data: allOrders },
+    { data: profiles },
+    { data: items },
   ] = await Promise.all([
     supabase.from(QRRA.products).select("*", { count: "exact", head: true }),
     supabase.from(QRRA.orders).select("*", { count: "exact", head: true }),
@@ -26,11 +29,20 @@ export default async function AdminHomePage() {
       .select("id, status, total, created_at")
       .order("created_at", { ascending: false })
       .limit(8),
-    supabase.from(QRRA.orders).select("status, total"),
+    supabase
+      .from(QRRA.orders)
+      .select("id, status, total, created_at, user_id, shipping"),
+    supabase.from(QRRA.profiles).select("id, created_at"),
+    supabase
+      .from(QRRA.order_items)
+      .select("order_id, product_name, product_slug, qty, price"),
   ]);
 
-  const revenue =
-    (allOrders ?? []).reduce((sum, o) => sum + (o.total ?? 0), 0) ?? 0;
+  const analytics = computeAnalytics(
+    allOrders ?? [],
+    items ?? [],
+    profiles ?? [],
+  );
 
   const byStatus = ORDER_STATUSES.map((status) => ({
     status,
@@ -47,9 +59,15 @@ export default async function AdminHomePage() {
       value: customersCount ?? 0,
     },
     {
-      href: "/admin/orders",
-      label: "Выручка (все заказы)",
-      value: formatPrice(revenue),
+      href: "/admin/analytics",
+      label: "Выручка 7 дней",
+      value: formatPrice(analytics.revenue7d),
+      isMoney: true,
+    },
+    {
+      href: "/admin/analytics",
+      label: "Средний чек",
+      value: formatPrice(Math.round(analytics.aov)),
       isMoney: true,
     },
   ];
@@ -61,7 +79,20 @@ export default async function AdminHomePage() {
         description="Заказы, каталог и клиенты QRRA."
       />
 
-      <div className="grid gap-4 px-4 py-8 sm:grid-cols-2 sm:px-8 lg:grid-cols-4">
+      <p className="px-4 text-sm sm:px-8">
+        <Link
+          href="/admin/analytics"
+          className="font-bold text-signal underline"
+        >
+          Полная аналитика →
+        </Link>
+        <span className="text-mute">
+          {" "}
+          — сегменты, города, топ товаров, графики 14 дней.
+        </span>
+      </p>
+
+      <div className="grid gap-4 px-4 py-6 sm:grid-cols-2 sm:px-8 lg:grid-cols-3 xl:grid-cols-6">
         {cards.map((c) => (
           <Link
             key={c.label}

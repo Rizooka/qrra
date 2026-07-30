@@ -4,6 +4,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { useCart } from "@/components/cart-provider";
+import {
+  CheckoutStartTracker,
+  trackOrderComplete,
+} from "@/components/checkout-tracker";
 import { formatPrice } from "@/data/products";
 import { QRRA } from "@/lib/db/tables";
 import { createClient } from "@/lib/supabase/client";
@@ -131,12 +135,14 @@ export default function CheckoutPage() {
     }
 
     clear();
+    trackOrderComplete(order.id, total);
     setDone(true);
     window.scrollTo({ top: 0 });
   };
 
   return (
     <section className="bg-paper pt-24">
+      <CheckoutStartTracker />
       <div className="mx-auto grid max-w-[1100px] gap-10 px-4 pb-20 sm:px-6 lg:grid-cols-[1.2fr_0.8fr]">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.22em] text-signal">

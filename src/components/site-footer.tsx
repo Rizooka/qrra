@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FeedbackFooterSection } from "@/components/feedback-footer-section";
 import { DestroySite } from "@/components/destroy-site";
 
 export function SiteFooter() {
@@ -62,6 +63,8 @@ export function SiteFooter() {
           </ul>
         </div>
       </div>
+
+      <FeedbackFooterSection />
 
       <DestroySite />
 

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ProductHeroVisual } from "@/components/product-actions";
 import { ProductBuyPanel } from "@/components/product-buy-panel";
 import { ProductTile } from "@/components/product-tile";
+import { ProductViewTracker } from "@/components/product-view-tracker";
 import { formatPrice, products as staticProducts } from "@/data/products";
 import { fetchProductBySlug, fetchRelated } from "@/lib/products";
 
@@ -33,6 +34,7 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <>
+      <ProductViewTracker slug={product.slug} id={product.id} />
       <section className="border-b-2 border-ink pt-16 lg:grid lg:min-h-[calc(100svh-4rem)] lg:grid-cols-2">
         <ProductHeroVisual product={product} />
 

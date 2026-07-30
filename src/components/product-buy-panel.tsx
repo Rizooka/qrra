@@ -1,8 +1,9 @@
 "use client";
 
+import { FeedbackPanel } from "@/components/feedback-panel";
 import { useState } from "react";
-import type { Product } from "@/data/products";
 import { AddToCartButton } from "@/components/product-actions";
+import type { Product } from "@/data/products";
 import Link from "next/link";
 
 export function ProductBuyPanel({ product }: { product: Product }) {
@@ -64,6 +65,11 @@ export function ProductBuyPanel({ product }: { product: Product }) {
           <dd className="mt-1 font-bold leading-snug">{product.care}</dd>
         </div>
       </dl>
+
+      <FeedbackPanel
+        productSlug={product.slug}
+        title="Пожелание по этой модели"
+      />
 
       <div className="flex flex-wrap items-center gap-4">
         <AddToCartButton product={product} />

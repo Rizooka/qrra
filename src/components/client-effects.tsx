@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { usePathname } from "next/navigation";
 
 const SiteGrain = dynamic(
   () => import("@/components/site-grain").then((m) => m.SiteGrain),
@@ -13,9 +14,12 @@ const CustomCursor = dynamic(
 );
 
 export function ClientEffects() {
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith("/admin");
+
   return (
     <>
-      <CustomCursor />
+      {!isAdmin ? <CustomCursor /> : null}
       <SiteGrain />
     </>
   );

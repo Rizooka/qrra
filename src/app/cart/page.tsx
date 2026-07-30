@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { useCart } from "@/components/cart-provider";
+import { CartViewTracker } from "@/components/cart-view-tracker";
 import { GlassesVisual } from "@/components/glasses-visual";
 import { formatPrice } from "@/data/products";
+import { track } from "@/lib/analytics/track";
 
 export default function CartPage() {
   const { items, total, setQty, remove, clear, ready } = useCart();
@@ -20,6 +22,7 @@ export default function CartPage() {
 
   return (
     <section className="bg-paper pt-24">
+      <CartViewTracker />
       <div className="mx-auto max-w-[900px] px-4 pb-20 sm:px-6">
         <p className="text-xs font-bold uppercase tracking-[0.22em] text-signal">
           Корзина
@@ -77,7 +80,16 @@ export default function CartPage() {
                       type="button"
                       aria-label="Меньше"
                       data-cursor="hover"
-                      onClick={() => setQty(product.id, qty - 1)}
+                      onClick={() => {
+                        if (qty <= 1) {
+                          track({
+                            event: "remove_from_cart",
+                            product_slug: product.slug,
+                            product_id: product.id,
+                          });
+                        }
+                        setQty(product.id, qty - 1);
+                      }}
                       className="h-9 w-9 border-2 border-ink font-bold hover:bg-ink hover:text-paper"
                     >
                       −
@@ -89,7 +101,15 @@ export default function CartPage() {
                       type="button"
                       aria-label="Больше"
                       data-cursor="hover"
-                      onClick={() => setQty(product.id, qty + 1)}
+                      onClick={() => {
+                        track({
+                          event: "add_to_cart",
+                          product_slug: product.slug,
+                          product_id: product.id,
+                          metadata: { qty: qty + 1 },
+                        });
+                        setQty(product.id, qty + 1);
+                      }}
                       className="h-9 w-9 border-2 border-ink font-bold hover:bg-ink hover:text-paper"
                     >
                       +
@@ -97,7 +117,14 @@ export default function CartPage() {
                     <button
                       type="button"
                       data-cursor="hover"
-                      onClick={() => remove(product.id)}
+                      onClick={() => {
+                        track({
+                          event: "remove_from_cart",
+                          product_slug: product.slug,
+                          product_id: product.id,
+                        });
+                        remove(product.id);
+                      }}
                       className="ml-2 text-xs font-bold uppercase tracking-wider text-mute underline hover:text-signal"
                     >
                       Убрать

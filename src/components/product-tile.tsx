@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 import { GlassesVisual } from "@/components/glasses-visual";
 import { FlashWearer } from "@/components/flash-wearer";
 import { formatPrice, type Product } from "@/data/products";
+import { track } from "@/lib/analytics/track";
 import { useSound } from "@/components/sound-provider";
 import { useLiteMode } from "@/hooks/use-lite-mode";
 
@@ -37,6 +38,13 @@ export function ProductTile({
       data-cursor="hover"
       className="group relative block min-w-0 overflow-hidden border-2 border-ink bg-paper"
       style={{ animationDelay: `${index * 60}ms` }}
+      onClick={() => {
+        track({
+          event: "product_click",
+          product_slug: product.slug,
+          product_id: product.id,
+        });
+      }}
       onMouseEnter={() => {
         setActive(true);
         if (!hovered.current) {

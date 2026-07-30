@@ -7,6 +7,7 @@ import { FlashWearer } from "@/components/flash-wearer";
 import { UvSticker } from "@/components/uv-sticker";
 import { useSound } from "@/components/sound-provider";
 import { useLiteMode } from "@/hooks/use-lite-mode";
+import { track } from "@/lib/analytics/track";
 import { formatPrice, type Product } from "@/data/products";
 
 const LiquidPortrait = dynamic(
@@ -33,6 +34,12 @@ export function AddToCartButton({ product }: { product: Product }) {
       data-cursor="hover"
       onClick={() => {
         add(product);
+        track({
+          event: "add_to_cart",
+          product_slug: product.slug,
+          product_id: product.id,
+          metadata: { price: product.price },
+        });
         playAdd();
         setAdded(true);
         window.setTimeout(() => setAdded(false), 1600);
