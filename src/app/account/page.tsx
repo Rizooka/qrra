@@ -140,6 +140,17 @@ export default async function AccountPage() {
                       </li>
                     ))}
                   </ul>
+                  {(() => {
+                    const sh = (order.shipping ?? {}) as { tracking_number?: string; carrier?: string };
+                    if (!sh.tracking_number) return null;
+                    return (
+                      <div className="mt-3 border-t border-ink/20 pt-3">
+                        <p className="text-xs font-bold uppercase tracking-wider text-mute">Трек-номер</p>
+                        <p className="mt-1 font-mono text-sm font-bold">{sh.tracking_number}</p>
+                        {sh.carrier && <p className="text-xs text-mute">{sh.carrier}</p>}
+                      </div>
+                    );
+                  })()}
                   <OrderRepeatButton items={items} />
                 </li>
               );

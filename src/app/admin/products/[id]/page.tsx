@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { DeleteProductButton } from "../delete-button";
 import { ToggleActiveButton } from "../toggle-active";
 import { ProductForm } from "../product-form";
+import { DuplicateProductButton } from "@/components/admin/duplicate-product-button";
 import type { ColorGroup } from "@/data/products";
 
 type Props = { params: Promise<{ id: string }> };
@@ -42,6 +43,31 @@ export default async function EditProductPage({ params }: Props) {
             >
               На витрину
             </Link>
+            <DuplicateProductButton
+              product={{
+                slug: data.slug,
+                name: data.name,
+                price: data.price,
+                cost_price: data.cost_price ?? null,
+                sale_price: null,
+                sale_starts_at: null,
+                sale_ends_at: null,
+                low_stock_threshold: data.low_stock_threshold ?? 3,
+                color: data.color,
+                lens: data.lens,
+                vibe: data.vibe,
+                description: data.description,
+                accent: data.accent,
+                frame: data.frame,
+                tags: data.tags ?? [],
+                color_group: data.color_group,
+                fit: data.fit,
+                fit_note: data.fit_note,
+                specs: (data.specs ?? {}) as Record<string, string>,
+                care: data.care,
+                images: Array.isArray(data.images) ? (data.images as string[]) : [],
+              }}
+            />
             <ToggleActiveButton id={data.id} isActive={data.is_active} />
             <DeleteProductButton id={data.id} />
           </>
