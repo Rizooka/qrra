@@ -188,10 +188,15 @@ html.has-custom-cursor * {
   cursor: none !important;
 }
 
-html.site-broken body > *:not(.site-grain) {
+html.site-broken body > *:not(.site-grain):not(#destroy-physics-overlay) {
   opacity: 0 !important;
   pointer-events: none !important;
   transition: opacity 0.3s ease;
+}
+
+#destroy-physics-overlay {
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

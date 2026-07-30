@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Matter from "matter-js";
 
 export type ElementBlock = {
@@ -31,11 +32,16 @@ export function DestroyPhysics({
   initialBlocks?: ElementBlock[];
   onReboot: () => void;
 }) {
+  const [mounted, setMounted] = useState(false);
   const hostRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef<Matter.Engine | null>(null);
   const renderRef = useRef<Matter.Render | null>(null);
   const runnerRef = useRef<Matter.Runner | null>(null);
   const bodiesRef = useRef<Matter.Body[]>([]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const teardown = useCallback(() => {
     if (runnerRef.current) Matter.Runner.stop(runnerRef.current);
@@ -74,7 +80,6 @@ export function DestroyPhysics({
     const blocks = (initialBlocks && initialBlocks.length > 0) ? initialBlocks : DEFAULT_DEBRIS;
 
     const pieces = blocks.map((b, idx) => {
-      // Clamp initial positions inside viewport
       const startX = Math.max(60, Math.min(b.x || 150 + idx * 40, w - 60));
       const startY = Math.max(60, Math.min(b.y || 100 + idx * 30, h - 120));
 
@@ -175,6 +180,7 @@ export function DestroyPhysics({
   }, [initialBlocks, teardown]);
 
   useEffect(() => {
+    if (!mounted) return;
     bootPhysics();
     let resizeTimer = 0;
     const onResize = () => {
@@ -187,10 +193,12 @@ export function DestroyPhysics({
       window.removeEventListener("resize", onResize);
       teardown();
     };
-  }, [bootPhysics, teardown]);
+  }, [mounted, bootPhysics, teardown]);
 
-  return (
-    <div className="fixed inset-0 z-[20000] bg-ink">
+  if (!mounted) return null;
+
+  return createPortal(
+    <div id="destroy-physics-overlay" className="fixed inset-0 z-[99999] bg-[#0c0c0c]">
       <div ref={hostRef} className="absolute inset-0" />
       <div className="pointer-events-none absolute inset-x-0 top-8 text-center px-4">
         <p className="font-[family-name:var(--font-display)] text-2xl font-black uppercase tracking-widest text-acid sm:text-4xl drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
@@ -209,6 +217,7 @@ export function DestroyPhysics({
       >
         Перезапуск системы
       </button>
-    </div>
+    </div>,
+    document.body,
   );
 }
