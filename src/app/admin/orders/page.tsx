@@ -1,4 +1,5 @@
-import { createClient, qrra } from "@/lib/supabase/server";
+import { QRRA } from "@/lib/db/tables";
+import { createClient } from "@/lib/supabase/server";
 import { formatPrice } from "@/data/products";
 import { OrderStatusSelect } from "./status-select";
 
@@ -14,10 +15,10 @@ const statusLabel: Record<string, string> = {
 
 export default async function AdminOrdersPage() {
   const supabase = await createClient();
-  const { data: orders } = await qrra(supabase)
-    .from("orders")
+  const { data: orders } = await supabase
+    .from(QRRA.orders)
     .select(
-      "id, status, total, shipping, created_at, order_items(product_name, qty, price), profiles(full_name, phone)",
+      "id, status, total, shipping, created_at, qrra_order_items(product_name, qty, price), qrra_profiles(full_name, phone)",
     )
     .order("created_at", { ascending: false });
 
@@ -36,12 +37,12 @@ export default async function AdminOrdersPage() {
               line?: string;
               delivery?: string;
             };
-            const items = (order.order_items ?? []) as {
+            const items = (order.qrra_order_items ?? []) as {
               product_name: string;
               qty: number;
               price: number;
             }[];
-            const profile = order.profiles as
+            const profile = order.qrra_profiles as
               | { full_name: string | null; phone: string | null }
               | null
               | { full_name: string | null; phone: string | null }[];

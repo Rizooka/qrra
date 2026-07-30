@@ -2,7 +2,8 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient, qrra } from "@/lib/supabase/client";
+import { QRRA } from "@/lib/db/tables";
+import { createClient } from "@/lib/supabase/client";
 
 export function AccountProfileForm({
   fullName,
@@ -30,9 +31,13 @@ export function AccountProfileForm({
       setMsg("Нет сессии");
       return;
     }
-    const { error } = await qrra(supabase)
-      .from("profiles")
-      .update({ full_name: name, phone: tel, updated_at: new Date().toISOString() })
+    const { error } = await supabase
+      .from(QRRA.profiles)
+      .update({
+        full_name: name,
+        phone: tel,
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", user.id);
     setLoading(false);
     if (error) {

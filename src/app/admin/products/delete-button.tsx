@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { createClient, qrra } from "@/lib/supabase/client";
+import { QRRA } from "@/lib/db/tables";
+import { createClient } from "@/lib/supabase/client";
 
 export function DeleteProductButton({ id }: { id: string }) {
   const router = useRouter();
@@ -13,7 +14,7 @@ export function DeleteProductButton({ id }: { id: string }) {
       onClick={async () => {
         if (!confirm("Удалить товар?")) return;
         const supabase = createClient();
-        await qrra(supabase).from("products").delete().eq("id", id);
+        await supabase.from(QRRA.products).delete().eq("id", id);
         router.refresh();
       }}
     >

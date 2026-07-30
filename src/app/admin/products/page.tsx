@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { createClient, qrra } from "@/lib/supabase/server";
+import { QRRA } from "@/lib/db/tables";
+import { createClient } from "@/lib/supabase/server";
 import { formatPrice } from "@/data/products";
 import { DeleteProductButton } from "./delete-button";
 import { ToggleActiveButton } from "./toggle-active";
@@ -8,8 +9,8 @@ export const metadata = { title: "Товары — Admin QRRA" };
 
 export default async function AdminProductsPage() {
   const supabase = await createClient();
-  const { data: products } = await qrra(supabase)
-    .from("products")
+  const { data: products } = await supabase
+    .from(QRRA.products)
     .select("id, slug, name, price, color_group, is_active")
     .order("name");
 

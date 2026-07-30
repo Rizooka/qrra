@@ -1,5 +1,6 @@
 import type { User } from "@supabase/supabase-js";
-import { createClient, qrra } from "@/lib/supabase/server";
+import { QRRA } from "@/lib/db/tables";
+import { createClient } from "@/lib/supabase/server";
 
 export async function getUser() {
   const supabase = await createClient();
@@ -20,23 +21,22 @@ export async function getProfile(): Promise<Profile | null> {
   const user = await getUser();
   if (!user) return null;
   const supabase = await createClient();
-  const { data } = await qrra(supabase)
-    .from("profiles")
+  const { data } = await supabase
+    .from(QRRA.profiles)
     .select("id, full_name, phone, role")
     .eq("id", user.id)
     .maybeSingle();
   return (data as Profile | null) ?? null;
 }
 
-/** Shared Supabase project: old auth users may lack qrra.profiles until first QRRA visit. */
 export async function ensureProfile(user: User): Promise<Profile | null> {
   const existing = await getProfile();
   if (existing) return existing;
 
   const supabase = await createClient();
   const meta = user.user_metadata as Record<string, unknown>;
-  const { data, error } = await qrra(supabase)
-    .from("profiles")
+  const { data, error } = await supabase
+    .from(QRRA.profiles)
     .insert({
       id: user.id,
       full_name:
@@ -48,8 +48,8 @@ export async function ensureProfile(user: User): Promise<Profile | null> {
     .maybeSingle();
 
   if (error) {
-    const { data: retry } = await qrra(supabase)
-      .from("profiles")
+    const { data: retry } = await supabase
+      .from(QRRA.profiles)
       .select("id, full_name, phone, role")
       .eq("id", user.id)
       .maybeSingle();

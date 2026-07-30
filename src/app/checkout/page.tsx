@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { useCart } from "@/components/cart-provider";
 import { formatPrice } from "@/data/products";
-import { createClient, qrra } from "@/lib/supabase/client";
+import { QRRA } from "@/lib/db/tables";
+import { createClient } from "@/lib/supabase/client";
 import { isUuid } from "@/lib/uuid";
 
 export default function CheckoutPage() {
@@ -88,9 +89,8 @@ export default function CheckoutPage() {
       return;
     }
 
-    const db = qrra(supabase);
-    const { data: order, error: orderErr } = await db
-      .from("orders")
+    const { data: order, error: orderErr } = await supabase
+      .from(QRRA.orders)
       .insert({
         user_id: user.id,
         status: "new",
@@ -121,7 +121,9 @@ export default function CheckoutPage() {
       price: product.price,
     }));
 
-    const { error: itemsErr } = await db.from("order_items").insert(rows);
+    const { error: itemsErr } = await supabase
+      .from(QRRA.order_items)
+      .insert(rows);
     setLoading(false);
     if (itemsErr) {
       setError(itemsErr.message);

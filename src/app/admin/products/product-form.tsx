@@ -2,7 +2,8 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient, qrra } from "@/lib/supabase/client";
+import { QRRA } from "@/lib/db/tables";
+import { createClient } from "@/lib/supabase/client";
 import type { ColorGroup } from "@/data/products";
 
 type ProductFormValues = {
@@ -98,10 +99,9 @@ export function ProductForm({ initial }: { initial?: ProductFormValues }) {
     };
 
     const supabase = createClient();
-    const db = qrra(supabase);
     const { error: err } = values.id
-      ? await db.from("products").update(payload).eq("id", values.id)
-      : await db.from("products").insert(payload);
+      ? await supabase.from(QRRA.products).update(payload).eq("id", values.id)
+      : await supabase.from(QRRA.products).insert(payload);
 
     setLoading(false);
     if (err) {

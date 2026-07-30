@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getProfile } from "@/lib/auth";
-import { createClient, qrra } from "@/lib/supabase/server";
+import { QRRA } from "@/lib/db/tables";
+import { createClient } from "@/lib/supabase/server";
 import { formatPrice } from "@/data/products";
 
 export const metadata = {
@@ -13,7 +14,6 @@ export default async function AdminHomePage() {
   if (!profile || profile.role !== "admin") redirect("/account");
 
   const supabase = await createClient();
-  const db = qrra(supabase);
 
   const [
     { count: productsCount },
@@ -21,11 +21,11 @@ export default async function AdminHomePage() {
     { count: customersCount },
     { data: recent },
   ] = await Promise.all([
-    db.from("products").select("*", { count: "exact", head: true }),
-    db.from("orders").select("*", { count: "exact", head: true }),
-    db.from("profiles").select("*", { count: "exact", head: true }),
-    db
-      .from("orders")
+    supabase.from(QRRA.products).select("*", { count: "exact", head: true }),
+    supabase.from(QRRA.orders).select("*", { count: "exact", head: true }),
+    supabase.from(QRRA.profiles).select("*", { count: "exact", head: true }),
+    supabase
+      .from(QRRA.orders)
       .select("id, status, total, created_at")
       .order("created_at", { ascending: false })
       .limit(5),

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ensureProfile, getProfile, getUser } from "@/lib/auth";
-import { createClient, qrra } from "@/lib/supabase/server";
+import { QRRA } from "@/lib/db/tables";
+import { createClient } from "@/lib/supabase/server";
 import { formatPrice } from "@/data/products";
 import { AccountProfileForm } from "./profile-form";
 import { AddressForm } from "./address-form";
@@ -25,17 +26,18 @@ export default async function AccountPage() {
 
   const profile = (await ensureProfile(user)) ?? (await getProfile());
   const supabase = await createClient();
-  const db = qrra(supabase);
 
   const [{ data: addresses }, { data: orders }] = await Promise.all([
-    db
-      .from("addresses")
+    supabase
+      .from(QRRA.addresses)
       .select("*")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false }),
-    db
-      .from("orders")
-      .select("id, status, total, shipping, created_at, order_items(product_name, qty, price)")
+    supabase
+      .from(QRRA.orders)
+      .select(
+        "id, status, total, shipping, created_at, qrra_order_items(product_name, qty, price)",
+      )
       .eq("user_id", user.id)
       .order("created_at", { ascending: false }),
   ]);
@@ -108,7 +110,7 @@ export default async function AccountPage() {
           </h2>
           <ul className="mt-4 space-y-4">
             {(orders ?? []).map((order) => {
-              const items = (order.order_items ?? []) as {
+              const items = (order.qrra_order_items ?? []) as {
                 product_name: string;
                 qty: number;
                 price: number;

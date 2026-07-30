@@ -29,6 +29,3 @@ export async function createClient() {
   );
 }
 
-export function qrra(client: Awaited<ReturnType<typeof createClient>>) {
-  return client.schema("qrra");
-}

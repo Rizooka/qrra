@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { QRRA } from "@/lib/db/tables";
 import { getSupabaseAnonKey, normalizeSupabaseUrl } from "./env";
 
 export async function updateSession(request: NextRequest) {
@@ -51,8 +52,7 @@ export async function updateSession(request: NextRequest) {
 
   if (path.startsWith("/admin") && user) {
     const { data: profile } = await supabase
-      .schema("qrra")
-      .from("profiles")
+      .from(QRRA.profiles)
       .select("role")
       .eq("id", user.id)
       .maybeSingle();

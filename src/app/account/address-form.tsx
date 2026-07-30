@@ -2,7 +2,8 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient, qrra } from "@/lib/supabase/client";
+import { QRRA } from "@/lib/db/tables";
+import { createClient } from "@/lib/supabase/client";
 
 export function AddressForm() {
   const router = useRouter();
@@ -25,7 +26,7 @@ export function AddressForm() {
       setError("Нет сессии");
       return;
     }
-    const { error: err } = await qrra(supabase).from("addresses").insert({
+    const { error: err } = await supabase.from(QRRA.addresses).insert({
       user_id: user.id,
       label,
       city,

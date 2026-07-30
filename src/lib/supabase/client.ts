@@ -11,7 +11,3 @@ export function createClient() {
   }
   return createBrowserClient(url, key);
 }
-
-export function qrra(client: ReturnType<typeof createClient>) {
-  return client.schema("qrra");
-}

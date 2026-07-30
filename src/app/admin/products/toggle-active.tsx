@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { createClient, qrra } from "@/lib/supabase/client";
+import { QRRA } from "@/lib/db/tables";
+import { createClient } from "@/lib/supabase/client";
 
 export function ToggleActiveButton({
   id,
@@ -20,8 +21,8 @@ export function ToggleActiveButton({
       }`}
       onClick={async () => {
         const supabase = createClient();
-        await qrra(supabase)
-          .from("products")
+        await supabase
+          .from(QRRA.products)
           .update({
             is_active: !isActive,
             updated_at: new Date().toISOString(),

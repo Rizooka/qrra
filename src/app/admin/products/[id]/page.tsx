@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { createClient, qrra } from "@/lib/supabase/server";
+import { QRRA } from "@/lib/db/tables";
+import { createClient } from "@/lib/supabase/server";
 import { ProductForm } from "../product-form";
 import type { ColorGroup } from "@/data/products";
 
@@ -13,8 +14,8 @@ export async function generateMetadata({ params }: Props) {
 export default async function EditProductPage({ params }: Props) {
   const { id } = await params;
   const supabase = await createClient();
-  const { data } = await qrra(supabase)
-    .from("products")
+  const { data } = await supabase
+    .from(QRRA.products)
     .select("*")
     .eq("id", id)
     .maybeSingle();

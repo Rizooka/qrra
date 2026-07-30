@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { createClient, qrra } from "@/lib/supabase/client";
+import { QRRA } from "@/lib/db/tables";
+import { createClient } from "@/lib/supabase/client";
 
 const statuses = [
   "new",
@@ -26,8 +27,8 @@ export function OrderStatusSelect({
       className="border-2 border-ink bg-paper px-3 py-2 text-xs font-bold uppercase tracking-wider outline-none"
       onChange={async (e) => {
         const supabase = createClient();
-        await qrra(supabase)
-          .from("orders")
+        await supabase
+          .from(QRRA.orders)
           .update({
             status: e.target.value,
             updated_at: new Date().toISOString(),

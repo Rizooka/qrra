@@ -3,7 +3,8 @@ import {
   type ColorGroup,
   type Product,
 } from "@/data/products";
-import { createClient, qrra } from "@/lib/supabase/server";
+import { QRRA } from "@/lib/db/tables";
+import { createClient } from "@/lib/supabase/server";
 
 type DbProduct = {
   id: string;
@@ -57,7 +58,7 @@ export async function fetchProducts(opts?: {
 }): Promise<Product[]> {
   try {
     const supabase = await createClient();
-    let query = qrra(supabase).from("products").select("*").order("name");
+    let query = supabase.from(QRRA.products).select("*").order("name");
     if (opts?.activeOnly !== false) {
       query = query.eq("is_active", true);
     }
@@ -74,8 +75,8 @@ export async function fetchProductBySlug(
 ): Promise<Product | null> {
   try {
     const supabase = await createClient();
-    const { data, error } = await qrra(supabase)
-      .from("products")
+    const { data, error } = await supabase
+      .from(QRRA.products)
       .select("*")
       .eq("slug", slug)
       .maybeSingle();
