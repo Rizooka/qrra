@@ -271,19 +271,16 @@ export function CheckoutForm() {
 
     setWasGuest(!user);
     setCreatedOrderId(order.id);
+    setDone(true);
     clear();
     trackOrderComplete(order.id, finalTotal);
-    try {
-      await fetch("/api/orders/notify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderId: order.id, phone }),
-      });
-    } catch {
-      /* уведомление не блокирует заказ */
-    }
-    setDone(true);
     window.scrollTo({ top: 0 });
+
+    void fetch("/api/orders/notify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orderId: order.id, phone }),
+    }).catch(() => {});
   };
 
   return (

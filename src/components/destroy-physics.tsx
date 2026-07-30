@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import Matter from "matter-js";
 
-type ElementBlock = {
+export type ElementBlock = {
   id: number;
   label: string;
   bgColor: string;
@@ -15,16 +15,22 @@ type ElementBlock = {
   h: number;
 };
 
-const DEFAULT_DEBRIS = [
-  { label: "QRRA", bgColor: "#B8FF00", textColor: "#0c0c0c", borderColor: "#0c0c0c" },
-  { label: "STARE", bgColor: "#FF3B00", textColor: "#f4f2ee", borderColor: "#0c0c0c" },
-  { label: "UV400", bgColor: "#0c0c0c", textColor: "#B8FF00", borderColor: "#B8FF00" },
-  { label: "SIGNAL", bgColor: "#FF3B00", textColor: "#0c0c0c", borderColor: "#0c0c0c" },
-  { label: "ZERO APOLOGY", bgColor: "#00E5A0", textColor: "#0c0c0c", borderColor: "#0c0c0c" },
-  { label: "СМОТРИ ПЕРВЫМ", bgColor: "#f4f2ee", textColor: "#0c0c0c", borderColor: "#0c0c0c" },
+const DEFAULT_DEBRIS: ElementBlock[] = [
+  { id: 1, label: "QRRA", bgColor: "#B8FF00", textColor: "#0c0c0c", borderColor: "#0c0c0c", x: 200, y: 150, w: 180, h: 54 },
+  { id: 2, label: "STARE FIRST", bgColor: "#FF3B00", textColor: "#f4f2ee", borderColor: "#0c0c0c", x: 450, y: 200, w: 220, h: 50 },
+  { id: 3, label: "UV400 SHIELD", bgColor: "#0c0c0c", textColor: "#B8FF00", borderColor: "#B8FF00", x: 300, y: 280, w: 200, h: 48 },
+  { id: 4, label: "ZERO APOLOGY", bgColor: "#B8FF00", textColor: "#0c0c0c", borderColor: "#0c0c0c", x: 600, y: 120, w: 240, h: 56 },
+  { id: 5, label: "СМОТРИ ПЕРВЫМ", bgColor: "#f4f2ee", textColor: "#0c0c0c", borderColor: "#0c0c0c", x: 350, y: 360, w: 230, h: 52 },
+  { id: 6, label: "ОПРАВА КАДРА", bgColor: "#FF3B00", textColor: "#0c0c0c", borderColor: "#0c0c0c", x: 700, y: 250, w: 210, h: 48 },
 ];
 
-export function DestroyPhysics({ onReboot }: { onReboot: () => void }) {
+export function DestroyPhysics({
+  initialBlocks,
+  onReboot,
+}: {
+  initialBlocks?: ElementBlock[];
+  onReboot: () => void;
+}) {
   const hostRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef<Matter.Engine | null>(null);
   const renderRef = useRef<Matter.Render | null>(null);
@@ -48,82 +54,6 @@ export function DestroyPhysics({ onReboot }: { onReboot: () => void }) {
     bodiesRef.current = [];
   }, []);
 
-  const collectPageElements = useCallback((): ElementBlock[] => {
-    const viewW = window.innerWidth;
-    const viewH = window.innerHeight;
-    const selectors = [
-      "h1", "h2", "h3", "button", "a.border", "a[data-cursor]",
-      ".product-tile", "p.font-bold", "span.font-black", ".marquee-item"
-    ];
-
-    const elements = Array.from(document.querySelectorAll(selectors.join(",")));
-    const blocks: ElementBlock[] = [];
-    const seen = new Set<string>();
-
-    elements.forEach((el, i) => {
-      if (blocks.length >= 18) return;
-      const htmlEl = el as HTMLElement;
-      const rect = htmlEl.getBoundingClientRect();
-
-      // Only pick visible elements in the current viewport
-      if (
-        rect.top >= -50 &&
-        rect.top <= viewH &&
-        rect.width >= 35 &&
-        rect.height >= 20 &&
-        rect.width <= viewW * 0.95 &&
-        rect.height <= viewH * 0.8
-      ) {
-        const text = (htmlEl.innerText || htmlEl.getAttribute("aria-label") || "")
-          .trim()
-          .replace(/\s+/g, " ")
-          .slice(0, 22);
-
-        if (!text || seen.has(text)) return;
-        seen.add(text);
-
-        const computed = window.getComputedStyle(htmlEl);
-        let bg = computed.backgroundColor;
-        if (!bg || bg === "rgba(0, 0, 0, 0)" || bg === "transparent") {
-          bg = i % 3 === 0 ? "#FF3B00" : i % 3 === 1 ? "#B8FF00" : "#f4f2ee";
-        }
-        let fg = computed.color;
-        if (!fg || fg === "transparent") fg = "#0c0c0c";
-
-        blocks.push({
-          id: i + 1,
-          label: text.toUpperCase(),
-          bgColor: bg,
-          textColor: fg === bg ? "#0c0c0c" : fg,
-          borderColor: "#0c0c0c",
-          x: rect.left + rect.width / 2,
-          y: rect.top + rect.height / 2,
-          w: Math.max(80, Math.min(rect.width, 360)),
-          h: Math.max(36, Math.min(rect.height, 120)),
-        });
-      }
-    });
-
-    // Fallback if page had very few matching elements
-    if (blocks.length < 5) {
-      DEFAULT_DEBRIS.forEach((d, i) => {
-        blocks.push({
-          id: 100 + i,
-          label: d.label,
-          bgColor: d.bgColor,
-          textColor: d.textColor,
-          borderColor: d.borderColor,
-          x: 100 + Math.random() * (viewW - 200),
-          y: 80 + i * 50,
-          w: 140 + Math.random() * 80,
-          h: 44,
-        });
-      });
-    }
-
-    return blocks;
-  }, []);
-
   const bootPhysics = useCallback(() => {
     const host = hostRef.current;
     if (!host) return;
@@ -131,7 +61,7 @@ export function DestroyPhysics({ onReboot }: { onReboot: () => void }) {
 
     const w = window.innerWidth;
     const h = window.innerHeight;
-    const engine = Matter.Engine.create({ gravity: { x: 0, y: 1.25 } });
+    const engine = Matter.Engine.create({ gravity: { x: 0, y: 1.3 } });
     engineRef.current = engine;
 
     const wallOpts = { isStatic: true, render: { visible: false } };
@@ -141,38 +71,41 @@ export function DestroyPhysics({ onReboot }: { onReboot: () => void }) {
       Matter.Bodies.rectangle(w + 30, h / 2, 60, h * 3, wallOpts),
     ];
 
-    const blocks = collectPageElements();
+    const blocks = (initialBlocks && initialBlocks.length > 0) ? initialBlocks : DEFAULT_DEBRIS;
 
-    const pieces = blocks.map((b) => {
-      const body = Matter.Bodies.rectangle(b.x, b.y, b.w, b.h, {
-        restitution: 0.45,
+    const pieces = blocks.map((b, idx) => {
+      // Clamp initial positions inside viewport
+      const startX = Math.max(60, Math.min(b.x || 150 + idx * 40, w - 60));
+      const startY = Math.max(60, Math.min(b.y || 100 + idx * 30, h - 120));
+
+      const body = Matter.Bodies.rectangle(startX, startY, b.w, b.h, {
+        restitution: 0.5,
         friction: 0.1,
-        frictionAir: 0.015,
-        angle: (Math.random() - 0.5) * 0.4,
+        frictionAir: 0.012,
+        angle: (Math.random() - 0.5) * 0.3,
         render: {
-          fillStyle: b.bgColor,
-          strokeStyle: b.borderColor,
+          fillStyle: b.bgColor || "#B8FF00",
+          strokeStyle: "#0c0c0c",
           lineWidth: 2,
         },
         label: b.label,
       });
 
-      // Give real element blocks an initial explosion impulse from their positions
       Matter.Body.setVelocity(body, {
-        x: (Math.random() - 0.5) * 14,
-        y: -3 - Math.random() * 8,
+        x: (Math.random() - 0.5) * 16,
+        y: -2 - Math.random() * 6,
       });
-      Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.25);
+      Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.3);
       return body;
     });
 
     const lenses = Array.from({ length: 6 }, (_, i) =>
       Matter.Bodies.circle(
         80 + Math.random() * (w - 160),
-        -100 - i * 50,
-        24 + Math.random() * 16,
+        -60 - i * 40,
+        22 + Math.random() * 16,
         {
-          restitution: 0.8,
+          restitution: 0.85,
           friction: 0.02,
           render: {
             fillStyle: i % 2 === 0 ? "#B8FF00" : "#FF3B00",
@@ -190,7 +123,7 @@ export function DestroyPhysics({ onReboot }: { onReboot: () => void }) {
     const canvas = document.createElement("canvas");
     canvas.width = w;
     canvas.height = h;
-    canvas.className = "absolute inset-0 h-full w-full";
+    canvas.className = "absolute inset-0 h-full w-full bg-[#0c0c0c]";
     host.innerHTML = "";
     host.appendChild(canvas);
 
@@ -201,7 +134,7 @@ export function DestroyPhysics({ onReboot }: { onReboot: () => void }) {
         width: w,
         height: h,
         wireframes: false,
-        background: "transparent",
+        background: "#0c0c0c",
         pixelRatio: Math.min(window.devicePixelRatio || 1, 2),
       },
     });
@@ -219,9 +152,9 @@ export function DestroyPhysics({ onReboot }: { onReboot: () => void }) {
         ctx.translate(body.position.x, body.position.y);
         ctx.rotate(body.angle);
         ctx.fillStyle = body.render.fillStyle === "#0c0c0c" || body.render.fillStyle === "rgb(12, 12, 12)" ? "#f4f2ee" : "#0c0c0c";
-        ctx.font = "bold 13px sans-serif";
+        ctx.font = "black 14px sans-serif";
 
-        const text = body.label.length > 20 ? body.label.slice(0, 18) + "…" : body.label;
+        const text = body.label.length > 22 ? body.label.slice(0, 20) + "…" : body.label;
         ctx.fillText(text, 0, 0);
         ctx.restore();
       });
@@ -239,7 +172,7 @@ export function DestroyPhysics({ onReboot }: { onReboot: () => void }) {
       constraint: { stiffness: 0.2, render: { visible: false } },
     });
     Matter.World.add(engine.world, mouseConstraint);
-  }, [collectPageElements, teardown]);
+  }, [initialBlocks, teardown]);
 
   useEffect(() => {
     bootPhysics();
@@ -257,14 +190,14 @@ export function DestroyPhysics({ onReboot }: { onReboot: () => void }) {
   }, [bootPhysics, teardown]);
 
   return (
-    <div className="fixed inset-0 z-[20000] bg-ink/90 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[20000] bg-ink">
       <div ref={hostRef} className="absolute inset-0" />
       <div className="pointer-events-none absolute inset-x-0 top-8 text-center px-4">
-        <p className="font-[family-name:var(--font-display)] text-2xl font-black uppercase tracking-widest text-acid sm:text-4xl drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
-          Сайт разрушен
+        <p className="font-[family-name:var(--font-display)] text-2xl font-black uppercase tracking-widest text-acid sm:text-4xl drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
+          САЙТ РАЗРУШЕН
         </p>
-        <p className="mt-1 text-xs uppercase tracking-[0.16em] text-paper/70 font-semibold sm:text-sm">
-          Элементы этой страницы обрушились. Тащи их мышкой.
+        <p className="mt-1 text-xs uppercase tracking-[0.16em] text-paper/80 font-bold sm:text-sm">
+          Элементы обрушились. Тащи их мышкой.
         </p>
       </div>
 

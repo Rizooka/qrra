@@ -48,58 +48,58 @@ export function DigitalPassport({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-paper/20 pb-4">
           <div>
-            <p className="font-[family-name:var(--font-display)] text-xs font-black tracking-[0.2em] text-acid">
-              QRRA WEARER PASSPORT
+            <p className="font-[family-name:var(--font-display)] text-xs font-black tracking-[0.18em] text-acid uppercase">
+              ЭЛЕКТРОННЫЙ ПАСПОРТ ВЛАДЕЛЬЦА
             </p>
-            <p className="mt-0.5 text-[10px] uppercase tracking-wider text-paper/60">
-              OFFICIAL SYSTEM IDENTIFIER
+            <p className="mt-0.5 text-[10px] font-mono uppercase tracking-wider text-paper/60">
+              QRRA WEARER PASSPORT // OFFICIAL ID
             </p>
           </div>
           <span className="border border-acid bg-acid/10 px-2 py-1 font-mono text-[10px] font-bold text-acid uppercase tracking-widest">
-            VERIFIED
+            ПОДТВЕРЖДЕНО
           </span>
         </div>
 
         {/* Body */}
-        <div className="mt-5 space-y-4 font-mono text-xs">
+        <div className="mt-5 space-y-4 font-sans text-xs">
           <div>
-            <span className="block text-[9px] uppercase tracking-wider text-paper/50">
-              HOLDER NAME
+            <span className="block font-mono text-[9px] uppercase tracking-wider text-paper/50">
+              ВЛАДЕЛЬЕЦ ЗАКАЗА
             </span>
             <span className="text-sm font-black uppercase text-paper tracking-wider">
-              {customerName || "SIGHT DICTATOR"}
+              {customerName || "СМОТРЯЩИЙ ПЕРВЫМ"}
             </span>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <span className="block text-[9px] uppercase tracking-wider text-paper/50">
-                SYSTEM ID
+              <span className="block font-mono text-[9px] uppercase tracking-wider text-paper/50">
+                НОМЕР ЗАКАЗА
               </span>
-              <span className="font-bold text-acid tracking-wider">
+              <span className="font-mono font-bold text-acid tracking-wider">
                 #{shortId}
               </span>
             </div>
             <div>
-              <span className="block text-[9px] uppercase tracking-wider text-paper/50">
-                ISSUED DATE
+              <span className="block font-mono text-[9px] uppercase tracking-wider text-paper/50">
+                ДАТА ОФОРМЛЕНИЯ
               </span>
-              <span className="font-bold text-paper/90">{dateStr}</span>
+              <span className="font-mono font-bold text-paper/90">{dateStr}</span>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <span className="block text-[9px] uppercase tracking-wider text-paper/50">
-                STATUS
+              <span className="block font-mono text-[9px] uppercase tracking-wider text-paper/50">
+                СТАТУС ДОСТАВКИ
               </span>
-              <span className="font-bold text-signal">DIRECT LOOK</span>
+              <span className="font-bold text-signal">ОБРАБОТКА И СБОРКА</span>
             </div>
             <div>
-              <span className="block text-[9px] uppercase tracking-wider text-paper/50">
-                ACCESS LEVEL
+              <span className="block font-mono text-[9px] uppercase tracking-wider text-paper/50">
+                УРОВЕНЬ ДОСТУПА
               </span>
-              <span className="font-bold text-acid">ZERO APOLOGY</span>
+              <span className="font-bold text-acid">БЕЗ ИЗВИНЕНИЙ (UV400)</span>
             </div>
           </div>
         </div>
@@ -107,7 +107,7 @@ export function DigitalPassport({
         {/* Decorative elements & Barcode simulation */}
         <div className="mt-6 flex items-end justify-between border-t border-paper/20 pt-4">
           <div className="flex h-7 items-end gap-1">
-            {[12, 18, 8, 22, 14, 24, 10, 16, 20, 8, 24, 14, 18, 12].map((h, i) => (
+            {[14, 20, 8, 22, 12, 24, 10, 18, 20, 8, 24, 14, 18, 12].map((h, i) => (
               <span
                 key={i}
                 className="w-1 bg-paper/80"
@@ -116,7 +116,7 @@ export function DigitalPassport({
             ))}
           </div>
           <p className="font-[family-name:var(--font-display)] text-[10px] font-black tracking-widest text-paper/40">
-            LOOK FIRST.
+            СМОТРИ ПЕРВЫМ.
           </p>
         </div>
       </div>
@@ -127,7 +127,7 @@ export function DigitalPassport({
         data-cursor="hover"
         className="mt-6 border-2 border-acid bg-acid/10 px-6 py-2.5 font-[family-name:var(--font-display)] text-xs font-bold uppercase tracking-[0.16em] text-acid transition-colors hover:bg-acid hover:text-ink"
       >
-        {copied ? "ID Скопирован!" : "Скопировать ID Паспорта"}
+        {copied ? "ID Паспорта скопирован!" : "Скопировать номер паспорта"}
       </button>
     </div>
   );
