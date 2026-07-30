@@ -20,6 +20,12 @@ export type AnalyticsProfile = {
   created_at: string;
 };
 
+export type AnalyticsProduct = {
+  id: string;
+  slug: string;
+  cost_price?: number | null;
+};
+
 export type DayBucket = {
   date: string;
   label: string;
@@ -50,6 +56,9 @@ export type AnalyticsSnapshot = {
   revenueAll: number;
   revenue7d: number;
   revenue30d: number;
+  grossProfitAll: number;
+  grossProfit7d: number;
+  grossProfit30d: number;
   orders7d: number;
   orders30d: number;
   aov: number;
@@ -86,16 +95,41 @@ export function computeAnalytics(
   orders: AnalyticsOrder[],
   items: AnalyticsOrderItem[],
   profiles: AnalyticsProfile[],
+  products: AnalyticsProduct[] = [],
 ): AnalyticsSnapshot {
   const ms7 = 7 * 24 * 60 * 60 * 1000;
   const ms30 = 30 * 24 * 60 * 60 * 1000;
 
-function inWindow(ts: string, ms: number) {
-  return Date.now() - parseTs(ts) <= ms;
-}
+  function inWindow(ts: string, ms: number) {
+    return Date.now() - parseTs(ts) <= ms;
+  }
+
+  const costBySlugMap = new Map<string, number>();
+  products.forEach((p) => {
+    if (p.cost_price && p.cost_price > 0) {
+      costBySlugMap.set(p.slug, p.cost_price);
+    }
+  });
+
+  const orderItemsByOrderId = new Map<string, AnalyticsOrderItem[]>();
+  items.forEach((it) => {
+    const arr = orderItemsByOrderId.get(it.order_id) ?? [];
+    arr.push(it);
+    orderItemsByOrderId.set(it.order_id, arr);
+  });
+
+  function getOrderCost(orderId: string): number {
+    const orderItems = orderItemsByOrderId.get(orderId) ?? [];
+    return orderItems.reduce((sum, it) => {
+      const cost = costBySlugMap.get(it.product_slug) ?? 0;
+      return sum + cost * it.qty;
+    }, 0);
+  }
 
   const paidLike = orders.filter((o) => o.status !== "cancelled");
   const revenueAll = paidLike.reduce((s, o) => s + o.total, 0);
+  const costAll = paidLike.reduce((s, o) => s + getOrderCost(o.id), 0);
+  const grossProfitAll = revenueAll - costAll;
 
   const orders7 = orders.filter((o) => inWindow(o.created_at, ms7));
   const orders30 = orders.filter((o) => inWindow(o.created_at, ms30));
@@ -104,6 +138,12 @@ function inWindow(ts: string, ms: number) {
 
   const revenue7d = paid7.reduce((s, o) => s + o.total, 0);
   const revenue30d = paid30.reduce((s, o) => s + o.total, 0);
+
+  const cost7d = paid7.reduce((s, o) => s + getOrderCost(o.id), 0);
+  const cost30d = paid30.reduce((s, o) => s + getOrderCost(o.id), 0);
+
+  const grossProfit7d = revenue7d - cost7d;
+  const grossProfit30d = revenue30d - cost30d;
 
   const aov = paidLike.length ? revenueAll / paidLike.length : 0;
   const aov7d = paid7.length ? revenue7d / paid7.length : 0;
@@ -232,6 +272,9 @@ function inWindow(ts: string, ms: number) {
     revenueAll,
     revenue7d,
     revenue30d,
+    grossProfitAll,
+    grossProfit7d,
+    grossProfit30d,
     orders7d: orders7.length,
     orders30d: orders30.length,
     aov,

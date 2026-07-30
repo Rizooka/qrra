@@ -40,13 +40,14 @@ export default async function AdminAnalyticsPage() {
       .limit(15000),
     supabase
       .from(QRRA.products)
-      .select("id, slug, name, price, stock, is_active"),
+      .select("id, slug, name, price, cost_price, stock, is_active"),
   ]);
 
   const snapshot = computeAnalytics(
     orders ?? [],
     items ?? [],
     profiles ?? [],
+    products ?? [],
   );
   const eventSnapshot = computeEventAnalytics(events ?? []);
   const stockSnapshot = computeStockAnalytics(

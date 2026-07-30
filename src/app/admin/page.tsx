@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { OrderStatusBadge } from "@/components/admin/order-status-badge";
+import { RevenueBarChart } from "@/components/admin/revenue-bar-chart";
 import { computeAnalytics } from "@/lib/admin/compute-analytics";
 import { computeStockAnalytics } from "@/lib/admin/compute-stock-analytics";
 import { QRRA } from "@/lib/db/tables";
@@ -130,6 +131,10 @@ export default async function AdminHomePage() {
             </p>
           </Link>
         ))}
+      </div>
+
+      <div className="px-4 pb-6 sm:px-8">
+        <RevenueBarChart daily={analytics.daily14} />
       </div>
 
       <div className="grid gap-8 px-4 pb-12 sm:px-8 lg:grid-cols-[1fr_280px]">

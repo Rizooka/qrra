@@ -50,13 +50,13 @@ export function AnalyticsDashboard({ data }: { data: AnalyticsSnapshot }) {
 
   const kpi = [
     { label: "Выручка 7 дней", value: formatPrice(data.revenue7d) },
+    { label: "Прибыль 7 дней", value: formatPrice(data.grossProfit7d), highlight: true },
     { label: "Выручка 30 дней", value: formatPrice(data.revenue30d) },
+    { label: "Прибыль 30 дней", value: formatPrice(data.grossProfit30d), highlight: true },
     { label: "Заказы 7 дней", value: String(data.orders7d) },
     { label: "Средний чек", value: formatPrice(Math.round(data.aov)) },
-    { label: "Средний чек 7д", value: formatPrice(Math.round(data.aov7d)) },
     { label: "Конверсия в покупку", value: `${data.conversionPct}%` },
     { label: "Повторные клиенты", value: `${data.repeatRatePct}%` },
-    { label: "Новые регистрации 7д", value: String(data.newProfiles7d) },
   ];
 
   return (
@@ -65,7 +65,9 @@ export function AnalyticsDashboard({ data }: { data: AnalyticsSnapshot }) {
         {kpi.map((k) => (
           <div
             key={k.label}
-            className="border-2 border-ink bg-paper px-4 py-3"
+            className={`border-2 border-ink px-4 py-3 ${
+              "highlight" in k && k.highlight ? "bg-acid/30 border-ink font-bold" : "bg-paper"
+            }`}
           >
             <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-mute">
               {k.label}
