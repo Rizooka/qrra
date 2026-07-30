@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import { RealtimeOrdersNotifier } from "@/components/admin/realtime-orders-notifier";
 
 const nav = [
   { href: "/admin", label: "Обзор", exact: true },
@@ -70,7 +71,10 @@ export function AdminShell({ children }: { children: ReactNode }) {
           </Link>
         </div>
       </aside>
-      <div className="min-w-0">{children}</div>
+      <div className="min-w-0">
+        {children}
+        <RealtimeOrdersNotifier />
+      </div>
     </div>
   );
 }

@@ -19,3 +19,18 @@ export async function sendTelegramOrderAlert(text: string) {
   if (!res.ok) return { ok: false as const, skipped: false };
   return { ok: true as const, skipped: false };
 }
+
+export async function sendTelegramLowStockAlert(
+  productName: string,
+  currentStock: number,
+  threshold: number,
+) {
+  const text = [
+    "⚠️ QRRA: Низкий остаток товара!",
+    `Товар: ${productName}`,
+    `Остаток: ${currentStock} шт. (порог: ${threshold} шт.)`,
+    "Рекомендуется пополнить склад.",
+  ].join("\n");
+
+  return sendTelegramOrderAlert(text);
+}
